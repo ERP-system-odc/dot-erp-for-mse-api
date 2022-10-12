@@ -1,1 +1,2 @@
-ERP System API for medium and small scale businesses powered by DOT.
+# dot-erp-for-mse-api
+ERP system API for MSE
