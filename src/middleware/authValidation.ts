@@ -3,9 +3,9 @@ const Joi=require("joi")
 const emailValidator = require('deep-email-validator');
 
 
-const isEmailValid=async(email)=>{
-    return emailValidator.validate(email)
-    }
+// const isEmailValid=async(email)=>{
+//     return emailValidator.validate(email)
+//     }
 
 export const signupDataValidation=async (req,res,next)=>{
 
@@ -28,12 +28,12 @@ export const signupDataValidation=async (req,res,next)=>{
             })
         }
       
-        const {valid, reason, validators} = await isEmailValid(signupData.email);
-        if(!valid)
-        return res.status(400).json({
-            "message":"Please provide a valid email address",
-            "reason":validators[reason].reason
-        })
+        // const {valid, reason, validators} = await isEmailValid(signupData.email);
+        // if(!valid)
+        // return res.status(400).json({
+        //     "message":"Please provide a valid email address",
+        //     "reason":validators[reason].reason
+        // })
         next();
     }
     catch(err){
