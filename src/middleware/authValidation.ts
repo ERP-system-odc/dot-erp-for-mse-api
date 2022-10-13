@@ -3,13 +3,12 @@ const Joi=require("joi")
 
 
 
-export const authDataValidation=async (req,res,next)=>{
+export const signupDataValidation=async (req,res,next)=>{
 
-    const signInData={           
+    const signupData={           
         fullname:req.body.fullname,
         email:req.body.email,
         phonenumber:req.body.phonenumber,
-        role:req.body.role,
         password:req.body.password,
         confirmpassword:req.body.confirmpassword
 
@@ -17,10 +16,12 @@ export const authDataValidation=async (req,res,next)=>{
 
   
     try{
-        const {error, value} =signupSchema.validate(signInData,{abortEarly:false})
+        const {error, value} =signupSchema.validate(signupData,{abortEarly:false})
       
         if(error){
-            return res.status(400).json(error.message)
+            return res.status(400).json({
+                "message":error.message
+            })
         }
       
         
@@ -33,3 +34,27 @@ export const authDataValidation=async (req,res,next)=>{
 }
 
 
+export const signinDataValidation=async (req,res,next)=>{
+
+    const signinData={           
+        email:req.body.email,        
+        password:req.body.password
+       }
+
+  
+    try{
+        const {error, value} =signinSchema.validate(signinData,{abortEarly:false})
+      
+        if(error){
+            return res.status(400).json({
+                "message":error.message
+            })
+        }
+             
+        next();
+    }
+    catch(err){
+        next(err)
+    }
+   
+}

@@ -3,6 +3,7 @@ import express, { Request, Response } from "express"
 import { AppDataSource } from "./data-source"
 import { User } from "./entity/User"
 const authRouter=require("./routes/auth")
+const cookieParser=require("cookie-parser")
 
 const app=express()
 
@@ -14,6 +15,7 @@ AppDataSource.initialize()
 })
 .catch(error => console.log(error))
 
+app.use(cookieParser())
 app.use(express.json())
 app.use("/api/auth",authRouter)
 
