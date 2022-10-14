@@ -1,5 +1,6 @@
 import {User} from "../entity/User"
 import { AppDataSource } from "../data-source"
+import { Response } from "express"
 //import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
 const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
@@ -42,6 +43,7 @@ try{
     res.status(200).json({
     "message":"User signup is succcessful"
    })
+ //  console.log(res)
 }
 catch(err){
     next(err)
@@ -49,7 +51,7 @@ catch(err){
 
 
 }
-export const signin=async(req,res,next)=>{
+export const signin=async(req,res:Response,next)=>{
    
 try{
     const userRepository = AppDataSource.getRepository(User)
@@ -72,11 +74,13 @@ const token=jwt.sign({
     id:foundUser.id,isadmin:foundUser.isadmin
 },process.env.JWT_KEY)
 const {password,...importantAttributes}=foundUser
-res.cookie("access-token",token,{
+ res.cookie("access-token",token,{
     httpOnly:true
 }).status(200).json({
     credentials:importantAttributes
 })
+
+
 }
 catch(err){
     next(err)

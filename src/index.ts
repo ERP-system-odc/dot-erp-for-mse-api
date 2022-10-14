@@ -4,13 +4,17 @@ import { AppDataSource } from "./data-source"
 import { User } from "./entity/User"
 const authRouter=require("./routes/auth")
 const cookieParser=require("cookie-parser")
-const cors=require('cors')
-
-
 const app=express()
+const cors=require('cors')
 app.use(cors({
-    origin:`http://localhost:${process.env.PORT_NUMBER}`
+    origin:"*",
+    credentials:true,
+    optionScuccessStatus:200
+
 }))
+
+
+
 
 AppDataSource.initialize()
 .then(async () => {
