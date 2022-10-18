@@ -3,11 +3,13 @@ import {signup,signin} from "../controllers/auth"
 import {signinDataValidation,signupDataValidation} from "../middleware/authValidation"
 
 
-const authRouter=express.Router()
+const authRouter:Router=express.Router()
 
 
 authRouter.post('/signup',signupDataValidation,signup)
 authRouter.post('/signin',signinDataValidation,signin)
 
 
-module.exports=authRouter
+export {
+    authRouter
+}

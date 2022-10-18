@@ -1,19 +1,17 @@
 require("dotenv").config()
-import express, { Request, Response } from "express"
+import express, { Request, Response,Application } from "express"
 import { AppDataSource } from "./data-source"
-import { User } from "./entity/User"
-const authRouter=require("./routes/auth")
+import { authRouter } from "./routes/auth"
+import { firmDefinitionRouter } from "./routes/firmDefinition"
 const cookieParser=require("cookie-parser")
-const app=express()
+const app:Application=express()
 const cors=require('cors')
 app.use(cors({
     origin:"*",
     credentials:true,
-    optionScuccessStatus:200
+    optionSuccessStatus:200
 
 }))
-
-
 
 
 AppDataSource.initialize()
@@ -27,6 +25,7 @@ AppDataSource.initialize()
 app.use(cookieParser())
 app.use(express.json())
 app.use("/api/auth",authRouter)
+app.use("/api/firmDefinition",firmDefinitionRouter)
 
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;

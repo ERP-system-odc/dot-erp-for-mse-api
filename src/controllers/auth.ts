@@ -1,30 +1,17 @@
 import {User} from "../entity/User"
 import { AppDataSource } from "../data-source"
-import { Response } from "express"
-//import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+import { Response,Request } from "express"
 const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
 
-// const admin=require("firebase-admin")
-const credentials=require('../serviceAccountKey.json')
 
-// admin.initializeApp({
-//     credential: admin.credential.cert(credentials)
-// })
 
-export const signup=async(req,res,next)=>{
+export const signup=async(req:Request,res:Response,next)=>{
    
 try{
-    // const userResponse=await admin.auth().createUser({
-    //     email:req.body.email,
-    //     password:req.body.password,
-    //     phoneNumber:req.body.phonenumber,
-    //     emailVerified:false,
-    //     displayName:req.body.fullname
 
-    // })
     const userRepository = AppDataSource.getRepository(User)
-    const foundUser=await userRepository.findOneBy({email:req.body.email,phonenumber:req.body.phoneNumber})
+    const foundUser=await userRepository.findOneBy({email:req.body.email,phone_number:req.body.phoneNumber})
     if(foundUser)
         return res.status(302).json({
             "message":"user already exists."
@@ -32,18 +19,19 @@ try{
     const salt=bcrypt.genSaltSync(10)
     const hash=bcrypt.hashSync(req.body.password,salt)
      const user = new User()
-    user.fullname = req.body.fullname
+    user.full_name = req.body.full_name
     user.email=req.body.email
-    user.phonenumber=req.body.phonenumber
-    user.isadmin="false"
+    user.phone_number=req.body.phone_number
+    user.is_admin=false
+    user.is_starter=true
     user.password=hash
   
     await AppDataSource.manager.save(user)
 
     res.status(200).json({
-    "message":"User signup is succcessful"
+    "message":"User signup is successful"
    })
- //  console.log(res)
+
 }
 catch(err){
     next(err)
@@ -51,7 +39,7 @@ catch(err){
 
 
 }
-export const signin=async(req,res:Response,next)=>{
+export const signin=async(req:Request,res:Response,next)=>{
    
 try{
     const userRepository = AppDataSource.getRepository(User)
@@ -71,13 +59,13 @@ try{
     }) 
     
 const token=jwt.sign({
-    id:foundUser.id,isadmin:foundUser.isadmin
+    id:foundUser.id,is_admin:foundUser.is_admin
 },process.env.JWT_KEY)
 const {password,...importantAttributes}=foundUser
- res.cookie("access-token",token,{
-    httpOnly:true
-}).status(200).json({
-    credentials:importantAttributes
+
+ res.status(200).json({
+    credentials:importantAttributes,
+    "access-token":token
 })
 
 
@@ -87,4 +75,6 @@ catch(err){
 }
 
 }
+
+
 

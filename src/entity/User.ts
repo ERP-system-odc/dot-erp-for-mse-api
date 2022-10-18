@@ -8,18 +8,30 @@ export class User{
     id: number
 
     @Column()
-    fullname:string
+    full_name:string
 
-   @PrimaryColumn()
+   @PrimaryColumn({
+    unique:true
+   })
     email:string
 
-    @PrimaryColumn()
-    phonenumber:string
+    @PrimaryColumn({
+    unique:true
+    }    
+    )
+    phone_number:string
 
     @Column()
     password:string
 
-    @Column()
-    isadmin:string
+    @Column({
+        default:false
+    })
+    is_admin:boolean
+
+    @Column({
+        default:true
+    })
+    is_starter:boolean
 
 }
