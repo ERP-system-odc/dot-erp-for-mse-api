@@ -10,12 +10,12 @@ export class User{
     @Column()
     full_name:string
 
-   @PrimaryColumn({
+   @Column({
     unique:true
    })
     email:string
 
-    @PrimaryColumn({
+    @Column({
     unique:true
     }    
     )
