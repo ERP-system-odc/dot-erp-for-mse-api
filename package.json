@@ -2,6 +2,7 @@
    "name": "dot-erp-for-mse-api",
    "version": "0.0.1",
    "description": "Awesome project developed with TypeORM.",
+   "main": "index.js",
    "type": "commonjs",
    "devDependencies": {
       "@types/node": "^16.11.65",
@@ -12,6 +13,7 @@
       "@firebase/auth": "^0.20.9",
       "@types/express": "^4.17.14",
       "bcrypt": "^5.1.0",
+      "cctx": "^1.0.1",
       "class-validator": "^0.13.2",
       "cookie-parser": "^1.4.6",
       "cors": "^2.8.5",
