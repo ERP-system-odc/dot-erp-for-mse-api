@@ -4,6 +4,7 @@ import { DataSource } from "typeorm"
 import { User } from "./entity/User"
 import { Firm } from "./entity/Firm"
 
+
 export const AppDataSource = new DataSource({
     type: "mysql",
     host: "localhost",

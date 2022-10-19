@@ -14,6 +14,7 @@ try{
     const foundUser=await userRepository.findOneBy({email:req.body.email,phone_number:req.body.phoneNumber})
     if(foundUser)
         return res.status(302).json({
+            "status":302,
             "message":"user already exists."
         })
     const salt=bcrypt.genSaltSync(10)
@@ -29,6 +30,7 @@ try{
     await AppDataSource.manager.save(user)
 
     res.status(200).json({
+    "status":200,
     "message":"User signup is successful"
    })
 

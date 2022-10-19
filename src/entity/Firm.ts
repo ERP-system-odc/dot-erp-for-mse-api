@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity,PrimaryColumn,OneToOne,JoinColumn, Double} from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column,PrimaryColumn,OneToOne,JoinColumn,OneToMany} from "typeorm"
 import { User } from "./User"
+
 
 @Entity({name:"firms"})
 export class Firm{
@@ -28,7 +29,7 @@ export class Firm{
 
     @PrimaryColumn({
         unique:true,
-        length:9
+        length:10
         
        
     })
@@ -40,6 +41,7 @@ export class Firm{
     })
     user: User
 
+    
     
 
 }

@@ -22,6 +22,7 @@ export const signupDataValidation=async (req,res,next)=>{
       
         if(error){
             return res.status(400).json({
+                "status":400,
                 "message":error.message
             })
         }
@@ -48,6 +49,7 @@ export const signinDataValidation=async (req,res,next)=>{
       
         if(error){
             return res.status(400).json({
+                "status":400,
                 "message":error.message
             })
         }

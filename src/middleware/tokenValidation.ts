@@ -8,6 +8,7 @@ const verifyToken = (req, res, next) => {
 
   if (!token) {
    return res.status(404).json({
+        status:404,
         message:"Token not found"
     })
   }
@@ -15,6 +16,7 @@ const verifyToken = (req, res, next) => {
   jwt.verify(token, process.env.JWT_KEY, (err, user) => {
     if (err) 
     return res.status(404).json({
+      status:404,
         message:"Invalid token"
     })
     req.user = user;
@@ -26,7 +28,8 @@ const verifyUser = (req, res, next) => {
  
   if (req.user.is_admin===true) {
     return res.status(403).json({
-        message:"You arenot authorized"
+      status:403,
+        message:"You aren't authorized"
     })
   }
      next()
@@ -36,6 +39,7 @@ const verifyUser = (req, res, next) => {
 const verifyAdmin = (req, res, next) => {
     if (req.user.is_admin===false) {
         return res.status(403).json({
+          status:403,
             message:"You arenot authorized"
         })
     }

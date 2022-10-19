@@ -13,10 +13,12 @@ export const defineFirm=async(req,res,next)=>{
         const userFound=await userRepository.findOneBy({id:user_id})
         if(!userFound)
         return res.status(404).json({
+            "status":404,
             "message":"user isn't found"
         })
         if(userFound.is_starter===false)
         return res.status(404).json({
+            "status":404,
             "message":"User business is already setup"
         })
         let firm=new Firm()
@@ -34,6 +36,7 @@ export const defineFirm=async(req,res,next)=>{
         await userRepository.save(userFound)
         
         res.status(200).json({
+            "status":200,
             "message":"Firm creation is successful",
             "firm":firm
            })  

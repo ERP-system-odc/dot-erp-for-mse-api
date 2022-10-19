@@ -1,5 +1,5 @@
 import express,{Router} from "express";
-import { verifyToken,verifyAdmin,verifyUser } from "../validationSchema/tokenValidation";
+import { verifyToken,verifyAdmin,verifyUser } from "../middleware/tokenValidation";
 import { defineFirm } from "../controllers/firmDefinition";
 import { firmDataValidation } from "../middleware/firmValidation";
 
