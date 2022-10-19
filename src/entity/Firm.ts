@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column,PrimaryColumn,OneToOne,JoinColumn,OneToMany} from "typeorm"
+import { Expense } from "./Expense"
 import { User } from "./User"
 
 
@@ -40,6 +41,8 @@ export class Firm{
         
     })
     user: User
+    @OneToMany(()=>Expense,expense=>expense.firm)
+    expenses:Expense[]
 
     
     
