@@ -8,7 +8,7 @@ export class Expense{
     id: number
 
     @Column()
-    expense_name:number
+    expense_name:string
 
     @Column(
         {

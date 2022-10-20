@@ -26,9 +26,15 @@ export class Firm{
         type:"double"
     })
 
-    business_capital:number
+    initial_capital:number
 
-    @PrimaryColumn({
+    @Column({
+        type:"double"
+    })
+
+    current_capital:number
+
+    @Column({
         unique:true,
         length:10
         

@@ -1,9 +1,9 @@
 import express,{Router} from "express";
-import { verifyToken,verifyAdmin,verifyUser } from "../middleware/tokenValidation";
+import { verifyToken,verifyUser } from "../middleware/tokenValidation";
 import { defineFirm } from "../controllers/firmDefinition";
 import { firmDataValidation } from "../middleware/firmValidation";
 
-const firmDefinitionRouter=express.Router()
+const firmDefinitionRouter:Router=express.Router()
 
 
 firmDefinitionRouter.post('/defineFirm/:userID',verifyToken,verifyUser,firmDataValidation,defineFirm)

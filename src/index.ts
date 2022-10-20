@@ -3,6 +3,7 @@ import express, { Request, Response,Application } from "express"
 import { AppDataSource } from "./data-source"
 import { authRouter } from "./routes/auth"
 import { firmDefinitionRouter } from "./routes/firmDefinition"
+import { inventoryManagementRouter } from "./routes/inventoryManagement"
 const cookieParser=require("cookie-parser")
 const app:Application=express()
 const cors=require('cors')
@@ -26,6 +27,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use("/api/auth",authRouter)
 app.use("/api/firmDefinition",firmDefinitionRouter)
+app.use("/api/inventoryManagement/",inventoryManagementRouter)
 
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
