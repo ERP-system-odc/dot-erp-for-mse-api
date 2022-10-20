@@ -9,7 +9,7 @@ export const defineFirm=async(req,res,next)=>{
         const userRepository=AppDataSource.getRepository(User)
         const firmRepository=AppDataSource.getRepository(Firm)
 
-        const user_id=req.params.userID
+        const user_id=req.user.id
         const userFound=await userRepository.findOneBy({id:user_id})
         if(!userFound)
         return res.status(404).json({
@@ -21,6 +21,12 @@ export const defineFirm=async(req,res,next)=>{
             "status":404,
             "message":"User business is already setup"
         })
+        const ifFirmExists=await firmRepository.findOneBy({business_name:req.body.business_name,tin_number:req.body.tin_number})
+        if(ifFirmExists)
+        return res.status(400).json({
+            "status":400,
+            message:"Firm already exists"
+        })
         let firm=new Firm()
         firm.business_name=req.body.business_name
         firm.business_type="manufacturing"
@@ -29,6 +35,8 @@ export const defineFirm=async(req,res,next)=>{
         firm.current_capital=req.body.business_capital
         firm.tin_number=req.body.tin_number
         firm.user=userFound
+
+        
 
         await firmRepository.save(firm)
 

@@ -6,7 +6,7 @@ import { firmDataValidation } from "../middleware/firmValidation";
 const firmDefinitionRouter:Router=express.Router()
 
 
-firmDefinitionRouter.post('/defineFirm/:userID',verifyToken,verifyUser,firmDataValidation,defineFirm)
+firmDefinitionRouter.post('/defineFirm',verifyToken,verifyUser,firmDataValidation,defineFirm)
 
 export {
     firmDefinitionRouter

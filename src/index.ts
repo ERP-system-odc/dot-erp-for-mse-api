@@ -27,7 +27,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use("/api/auth",authRouter)
 app.use("/api/firmDefinition",firmDefinitionRouter)
-app.use("/api/inventoryManagement/",inventoryManagementRouter)
+app.use("/api/inventory/",inventoryManagementRouter)
 
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
@@ -45,3 +45,4 @@ app.use((err,req:Request,res:Response,next)=>{
 app.listen(process.env.PORT_NUMBER,()=>{
     console.log("Server connected successfully!")
 })
+

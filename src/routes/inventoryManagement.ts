@@ -5,8 +5,8 @@ import { getInventoryTypes,createInventory } from "../controllers/inventoryManag
 
 const inventoryManagementRouter:Router=express.Router()
 
-inventoryManagementRouter.get('/:firmID',verifyToken,verifyUser,getInventoryTypes)
-inventoryManagementRouter.post('/:firmID',verifyToken,verifyUser,inventoryDataValidation,createInventory)
+inventoryManagementRouter.get('/manage',verifyToken,verifyUser,getInventoryTypes)
+inventoryManagementRouter.post('/manage',verifyToken,verifyUser,inventoryDataValidation,createInventory)
 
 
 export {

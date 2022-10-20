@@ -1,3 +1,4 @@
+import { User } from "../entity/User";
 import { Firm } from "../entity/Firm";
 import { InventoryType } from "../entity/InventoryType";
 import { InventoryTransaction } from "../entity/InventoryTransaction";
@@ -8,10 +9,11 @@ import { AppDataSource } from "../data-source";
 
 export const getInventoryTypes=async (req,res,next)=>{
 try{
+    const userRepository=AppDataSource.getRepository(User)   
+    const foundUser=await userRepository.findOneBy({id:req.user.id}) 
     const firmRepository=AppDataSource.getRepository(Firm)
     const inventoryTypeRepository=AppDataSource.getRepository(InventoryType)
-    const firm_id=req.params.firm_ID
-    const foundFirm=await firmRepository.findOneBy(firm_id)
+    const foundFirm=await firmRepository.findOneBy({user:foundUser})
     if(!foundFirm)
 return res.status(404).json({
     "status":404,
@@ -36,16 +38,17 @@ export const createInventory=async(req,res,next)=>{
     try{
        
 
+const userRepository=AppDataSource.getRepository(User)
+const foundUser=await userRepository.findOneBy({id:req.user.id}) 
 const firmRepository=AppDataSource.getRepository(Firm)
 const inventoryTypeRepository=AppDataSource.getRepository(InventoryType)
 const availableInventoryRepository=AppDataSource.getRepository(AvailableInventory)
 const inventoryTransactionRepository=AppDataSource.getRepository(InventoryTransaction)
 const expenseRepository=AppDataSource.getRepository(Expense)
-const firm_id=req.params.firm_ID
 if(req.body.inventory_expense==null)
 req.body.inventory_expense=0
 
-const foundFirm=await firmRepository.findOneBy(firm_id)
+const foundFirm=await firmRepository.findOneBy({user:foundUser})
 
 if(!foundFirm)
 return res.status(404).json({
@@ -143,15 +146,4 @@ res.status(200).json({
     catch(err){
         next(err)
     }
-
-
-
-
-
-
-
-
-
-
-
 }

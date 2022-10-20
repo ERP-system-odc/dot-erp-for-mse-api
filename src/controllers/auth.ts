@@ -5,7 +5,6 @@ const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
 
 
-
 export const signup=async(req:Request,res:Response,next)=>{
    
 try{
@@ -19,7 +18,7 @@ try{
         })
     const salt=bcrypt.genSaltSync(10)
     const hash=bcrypt.hashSync(req.body.password,salt)
-     const user = new User()
+    const user = new User()
     user.full_name = req.body.full_name
     user.email=req.body.email
     user.phone_number=req.body.phone_number
