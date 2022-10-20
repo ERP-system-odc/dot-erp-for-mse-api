@@ -34,7 +34,7 @@ next(err)
 }
 export const createInventory=async(req,res,next)=>{
     try{
-        console.log(req.body)
+       
 
 const firmRepository=AppDataSource.getRepository(Firm)
 const inventoryTypeRepository=AppDataSource.getRepository(InventoryType)
@@ -52,11 +52,13 @@ return res.status(404).json({
     "status":404,
     "message":"firm isn't found"
 })
+
 if(req.body.inventory_quantity*req.body.inventory_price+req.body.inventory_expense>foundFirm.current_capital)
 return res.status(412).json({
     "status":412,
     "message":"Current capital isn't enough to process the request."
 })
+
 let inventoryType=new InventoryType()
 const foundInventoryType=await inventoryTypeRepository.findOneBy({firm:foundFirm,inventory_name:req.body.inventory_name})
 if(!foundInventoryType){
