@@ -7,6 +7,7 @@ import { Expense } from "../entity/Expense";
 import { AppDataSource } from "../data-source";
 
 
+
 export const getInventoryTypes=async (req,res,next)=>{
 try{
     const userRepository=AppDataSource.getRepository(User)   
@@ -36,7 +37,6 @@ next(err)
 }
 export const createInventory=async(req,res,next)=>{
     try{
-       
 
 const userRepository=AppDataSource.getRepository(User)
 const foundUser=await userRepository.findOneBy({id:req.user.id}) 
@@ -69,6 +69,7 @@ inventoryType.inventory_name=req.body.inventory_name
 inventoryType.inventory_price=req.body.inventory_price
 inventoryType.firm=foundFirm
 inventoryType.least_critical_amount=req.body.least_critical_amount
+console.log(inventoryType)
 await inventoryTypeRepository.save(inventoryType)
 
 const availableInventory=new AvailableInventory()
@@ -146,4 +147,38 @@ res.status(200).json({
     catch(err){
         next(err)
     }
+}
+export const getAllInventories=async(req,res,next)=>{
+
+    const userRepository=AppDataSource.getRepository(User)   
+    const foundUser=await userRepository.findOneBy({id:req.user.id}) 
+    const firmRepository=AppDataSource.getRepository(Firm)
+    const inventoryTypeRepository=AppDataSource.getRepository(InventoryType)
+    const foundFirm=await firmRepository.findOneBy({user:foundUser})
+    if(!foundFirm)
+return res.status(404).json({
+    "status":404,
+    "message":"firm isn't found"
+})
+    const foundInventoryTypes=await inventoryTypeRepository.find({
+        relations:{
+            available_inventories:true
+        },
+        where:{
+            firm:foundFirm
+        }
+    })
+if(!foundInventoryTypes)
+return res.status(404).json({
+    "status":404,
+    "message":"Inventories not found"
+})
+
+return res.status(200).json({
+    status:200,
+    data:foundInventoryTypes
+})
+
+
+
 }

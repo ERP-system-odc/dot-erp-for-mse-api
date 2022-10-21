@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column,PrimaryColumn,OneToOne,JoinColumn,OneToMany} from "typeorm"
 import { Expense } from "./Expense"
+import { InventoryType } from "./InventoryType"
 import { User } from "./User"
 
 
@@ -36,8 +37,7 @@ export class Firm{
 
     @Column({
         unique:true,
-        length:10
-        
+        length:10        
        
     })
     tin_number:string
@@ -49,6 +49,9 @@ export class Firm{
     user: User
     @OneToMany(()=>Expense,expense=>expense.firm)
     expenses:Expense[]
+
+    @OneToMany(()=>InventoryType,inventory_type=>inventory_type.firm)
+    inventory_types:InventoryType[]
 
     
     

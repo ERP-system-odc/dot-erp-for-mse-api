@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column,OneToOne,JoinColumn, OneToMany} from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column,OneToOne,JoinColumn, OneToMany, ManyToOne} from "typeorm"
 import { Firm } from "./Firm"
 import { AvailableInventory } from "./AvailableInventory"
 
@@ -26,7 +26,7 @@ export class InventoryType{
             )
     available_inventories:AvailableInventory[]
 
-    @OneToOne(() => Firm)   
+    @ManyToOne(() => Firm,firm=>firm.inventory_types)   
     @JoinColumn()
     firm:Firm
 
