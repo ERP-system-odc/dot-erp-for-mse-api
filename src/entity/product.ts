@@ -1,21 +1,21 @@
 import { Entity, PrimaryGeneratedColumn, Column,OneToOne,JoinColumn,CreateDateColumn,UpdateDateColumn, ManyToOne, OneToMany} from "typeorm"
 import { InventoryType } from "./InventoryType"
-import { InventoryTransaction } from "./InventoryTransaction"
 
-@Entity({name:"available_inventories"})
-export class workInProgress{
+
+@Entity({name:"products"})
+export class Product{
 
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    inventory_name:string
+    product_name:string
 
-    @Column()
-    inventory_quantity:number
+    @Column({type:"int"})
+    product_quantity:number
 
     @Column({type:"double"})
-    inventory_price:number
+    product_SellingPrice:number
 
     @CreateDateColumn()
     created_at:Date
@@ -23,8 +23,9 @@ export class workInProgress{
     @UpdateDateColumn()
     updated_at:Date
     
-    @OneToMany(() => InventoryType, (inventorytype) => inventorytype.workinprogress)
-    inventorytypes: InventoryType[]
+    // @ManyToOne(() => InventoryType, inventory_type => inventory_type.work_in_progress)
+    // @JoinColumn()
+    // inventory_type:InventoryType
    
    
 }
