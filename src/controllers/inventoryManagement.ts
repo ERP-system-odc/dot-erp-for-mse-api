@@ -2,14 +2,11 @@ import { User } from "../entity/User";
 import { Firm } from "../entity/Firm";
 import { InventoryType } from "../entity/InventoryType";
 import { InventoryTransaction } from "../entity/InventoryTransaction";
-import { AvailableInventory } from "../entity/AvailableInventory";
 import { Expense } from "../entity/Expense";
 import { AppDataSource } from "../data-source";
 
+export const getAllInventories=async(req,res,next)=>{
 
-
-export const getInventoryTypes=async (req,res,next)=>{
-try{
     const userRepository=AppDataSource.getRepository(User)   
     const foundUser=await userRepository.findOneBy({id:req.user.id}) 
     const firmRepository=AppDataSource.getRepository(Firm)
@@ -20,21 +17,25 @@ return res.status(404).json({
     "status":404,
     "message":"firm isn't found"
 })
-    const foundInventoryTypes=await inventoryTypeRepository.findOneBy({firm:foundFirm})
+    const foundInventoryTypes=await inventoryTypeRepository.find({
+        where:{
+            firm:foundFirm
+        }
+    })
 if(!foundInventoryTypes)
 return res.status(404).json({
     "status":404,
-    "message":"Inventory types not found"
+    "message":"Inventories not found"
 })
-res.status(200).json({
-    "status":200,
-    "inventory_types":foundInventoryTypes
+
+return res.status(200).json({
+    status:200,
+    data:foundInventoryTypes
 })
+
 }
-catch(err){
-next(err)
-}
-}
+
+
 export const createInventory=async(req,res,next)=>{
     try{
 
@@ -42,7 +43,7 @@ const userRepository=AppDataSource.getRepository(User)
 const foundUser=await userRepository.findOneBy({id:req.user.id}) 
 const firmRepository=AppDataSource.getRepository(Firm)
 const inventoryTypeRepository=AppDataSource.getRepository(InventoryType)
-const availableInventoryRepository=AppDataSource.getRepository(AvailableInventory)
+
 const inventoryTransactionRepository=AppDataSource.getRepository(InventoryTransaction)
 const expenseRepository=AppDataSource.getRepository(Expense)
 if(req.body.inventory_expense==null)
@@ -69,21 +70,19 @@ inventoryType.inventory_name=req.body.inventory_name
 inventoryType.inventory_price=req.body.inventory_price
 inventoryType.firm=foundFirm
 inventoryType.least_critical_amount=req.body.least_critical_amount
+
+inventoryType.total_amount=req.body.inventory_quantity
 console.log(inventoryType)
 await inventoryTypeRepository.save(inventoryType)
-
-const availableInventory=new AvailableInventory()
-availableInventory.initial_quantity=req.body.inventory_quantity
-availableInventory.current_quantity=req.body.inventory_quantity
-availableInventory.inventory_type=inventoryType
-
-await availableInventoryRepository.save(availableInventory)
 
 const inventoryTransaction=new InventoryTransaction()
 inventoryTransaction.transaction_name="INVENTORY ADDITION"
 inventoryTransaction.transaction_type="add"
-inventoryTransaction.price=await availableInventory.initial_quantity*availableInventory.inventory_type.inventory_price
-inventoryTransaction.available_inventory=availableInventory
+inventoryTransaction.initial_quantity=req.body.inventory_quantity
+inventoryTransaction.current_quantity=req.body.inventory_quantity
+inventoryTransaction.unit_price=req.body.inventory_price
+inventoryTransaction.total_price=await req.body.inventory_quantity*req.body.inventory_price
+inventoryTransaction.inventory_type=inventoryType
 
 await inventoryTransactionRepository.save(inventoryTransaction)
 if(req.body.inventory_expense!=0){
@@ -110,21 +109,20 @@ return res.status(200).json({
 foundInventoryType.inventory_price=req.body.inventory_price
 foundInventoryType.firm=foundFirm
 foundInventoryType.least_critical_amount=req.body.least_critical_amount
-
+foundInventoryType.total_amount+=req.body.inventory_quantity
 await inventoryTypeRepository.save(foundInventoryType)
 
-const availableInventory=new AvailableInventory()
-availableInventory.initial_quantity=req.body.inventory_quantity
-availableInventory.current_quantity=req.body.inventory_quantity
-availableInventory.inventory_type=foundInventoryType
 
-await availableInventoryRepository.save(availableInventory)
 
 const inventoryTransaction=new InventoryTransaction()
+inventoryTransaction.initial_quantity=req.body.inventory_quantity
+inventoryTransaction.current_quantity=req.body.inventory_quantity
 inventoryTransaction.transaction_name="INVENTORY ADDITION"
 inventoryTransaction.transaction_type="add"
-inventoryTransaction.price=await availableInventory.initial_quantity*availableInventory.inventory_type.inventory_price
-inventoryTransaction.available_inventory=availableInventory
+inventoryTransaction.unit_price=req.body.inventory_price
+inventoryTransaction.total_price=await req.body.inventory_quantity*req.body.inventory_price
+inventoryTransaction.inventory_type=foundInventoryType
+
 
 await inventoryTransactionRepository.save(inventoryTransaction)
 if(req.body.inventory_expense!=0){
@@ -147,38 +145,4 @@ res.status(200).json({
     catch(err){
         next(err)
     }
-}
-export const getAllInventories=async(req,res,next)=>{
-
-    const userRepository=AppDataSource.getRepository(User)   
-    const foundUser=await userRepository.findOneBy({id:req.user.id}) 
-    const firmRepository=AppDataSource.getRepository(Firm)
-    const inventoryTypeRepository=AppDataSource.getRepository(InventoryType)
-    const foundFirm=await firmRepository.findOneBy({user:foundUser})
-    if(!foundFirm)
-return res.status(404).json({
-    "status":404,
-    "message":"firm isn't found"
-})
-    const foundInventoryTypes=await inventoryTypeRepository.find({
-        relations:{
-            available_inventories:true
-        },
-        where:{
-            firm:foundFirm
-        }
-    })
-if(!foundInventoryTypes)
-return res.status(404).json({
-    "status":404,
-    "message":"Inventories not found"
-})
-
-return res.status(200).json({
-    status:200,
-    data:foundInventoryTypes
-})
-
-
-
 }

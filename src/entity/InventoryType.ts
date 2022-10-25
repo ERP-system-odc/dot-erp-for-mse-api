@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column,OneToOne,JoinColumn, OneToMany, ManyToOne} from "typeorm"
 import { Firm } from "./Firm"
-import { AvailableInventory } from "./AvailableInventory"
+import { InventoryTransaction } from "./InventoryTransaction"
 
 @Entity({name:"inventory_types"})
 export class InventoryType{
@@ -21,10 +21,14 @@ export class InventoryType{
     })
     least_critical_amount:number
 
-    @OneToMany(()=>AvailableInventory,
-            available_inventory=>available_inventory.inventory_type
+    @Column({
+        type:"int"
+    })
+    total_amount:number
+    @OneToMany(()=>InventoryTransaction,
+            inventory_transaction=>inventory_transaction.inventory_type
             )
-    available_inventories:AvailableInventory[]
+    inventory_transactions:InventoryTransaction[]
 
     @ManyToOne(() => Firm,firm=>firm.inventory_types)   
     @JoinColumn()

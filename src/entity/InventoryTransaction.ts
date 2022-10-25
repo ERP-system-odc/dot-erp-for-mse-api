@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column,JoinColumn,CreateDateColumn,UpdateDateColumn, ManyToOne} from "typeorm"
-import { AvailableInventory } from "./AvailableInventory"
+import { InventoryType } from "./InventoryType"
 
 export enum transaction_types{
     ADD="add",
@@ -24,7 +24,18 @@ export class InventoryTransaction{
     @Column({
         type:"double"
     })
-    price:number
+    unit_price:number
+
+    @Column({
+        type:"double"
+    })
+    total_price:number
+
+    @Column()
+    initial_quantity:number
+
+    @Column()
+    current_quantity:number
 
     @CreateDateColumn()
     created_at:Date
@@ -33,9 +44,10 @@ export class InventoryTransaction{
     updated_at:Date
 
 
-    @ManyToOne(() => AvailableInventory,
-                available_inventory=>available_inventory.inventory_transactions)   
+   
+    @ManyToOne(() => InventoryType,
+                inventory_type=>inventory_type.inventory_transactions)   
     @JoinColumn()
-    available_inventory:AvailableInventory
+    inventory_type:InventoryType
 
 }

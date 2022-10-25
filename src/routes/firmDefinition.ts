@@ -10,4 +10,4 @@ firmDefinitionRouter.post('/defineFirm',verifyToken,verifyUser,firmDataValidatio
 
 export {
     firmDefinitionRouter
-}
+}   
