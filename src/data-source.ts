@@ -5,6 +5,8 @@ import { Firm } from "./entity/Firm"
 import { Expense } from "./entity/Expense"
 import { InventoryTransaction } from "./entity/InventoryTransaction"
 import { InventoryType } from "./entity/InventoryType"
+import { Standard } from "./entity/Standard"
+import { StandardSetting } from "./entity/StandardSettings"
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -15,7 +17,7 @@ export const AppDataSource = new DataSource({
     database: "mse_erp_db",
     synchronize: true,
     logging: false,
-    entities: [User,Firm,Expense,InventoryTransaction,InventoryType],
+    entities: [User,Firm,Expense,InventoryTransaction,InventoryType,Standard,StandardSetting],
     migrations: [],
     subscribers: [],
 })
