@@ -3,7 +3,7 @@ import { Firm } from "./Firm"
 import { InventoryTransaction } from "./InventoryTransaction"
 // import { WorkInProgress } from "./workInProgress"
 
-@Entity({name:"inventory_types"})
+@Entity({name:"inventoryused"})
 export class InventoryType{
 
     @PrimaryGeneratedColumn()
@@ -12,26 +12,12 @@ export class InventoryType{
     @Column()
     inventory_name:string
 
-   @Column({type:"double"})
-    inventory_price:number
-
-    @Column({type:"int"})
-    least_critical_amount:number
-
-   
 
     @Column({
         type:"int"
     })
     total_amount:number
-    @OneToMany(()=>InventoryTransaction,
-            inventory_transaction=>inventory_transaction.inventory_type
-            )
-    inventory_transactions:InventoryTransaction[]
-
-    @ManyToOne(() => Firm,firm=>firm.inventory_types)   
-    @JoinColumn()
-    firm:Firm
+    
     
     // @ManyToOne(() => WorkInProgress, (workinprogress) => workinprogress.inventory_type)
     // work_in_progress: WorkInProgress

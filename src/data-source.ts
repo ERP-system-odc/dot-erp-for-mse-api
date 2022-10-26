@@ -5,9 +5,13 @@ import { Firm } from "./entity/Firm"
 import { Expense } from "./entity/Expense"
 import { InventoryTransaction } from "./entity/InventoryTransaction"
 import { InventoryType } from "./entity/InventoryType"
+<<<<<<< HEAD
 import { Standard } from "./entity/Standard"
 import { StandardSetting } from "./entity/StandardSettings"
 
+=======
+// import { WorkInProgress } from "./entity/workInProgress"
+>>>>>>> 216518b96561369aa308ec0acbd341810ac52bbe
 export const AppDataSource = new DataSource({
     type: "mysql",
     host: "localhost",
