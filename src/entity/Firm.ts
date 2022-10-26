@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column,PrimaryColumn,OneToOne,JoinColum
 import { Expense } from "./Expense"
 import { InventoryType } from "./InventoryType"
 import { User } from "./User"
+import { Standard } from "./Standard"
 
 
 @Entity({name:"firms"})
@@ -52,6 +53,9 @@ export class Firm{
 
     @OneToMany(()=>InventoryType,inventory_type=>inventory_type.firm)
     inventory_types:InventoryType[]
+    @OneToMany(()=>Standard,standard=>standard.firm)
+    standards:Standard[]
+    
 
     
     
