@@ -5,7 +5,7 @@ import { InventoryType } from "./InventoryType"
 import { Product } from "./product"
 // import { WorkInProgress } from "./workInProgress"
 
-@Entity({name:"inventoryused"})
+@Entity({name:"inventory_used"})
 export class InventoryUsed{
 
     @PrimaryGeneratedColumn()
@@ -24,11 +24,11 @@ export class InventoryUsed{
     // @ManyToOne(() => WorkInProgress, (workinprogress) => workinprogress.inventory_type)
     // work_in_progress: WorkInProgress
 
-    @ManyToOne(() => Product, (product) => product.inventory_used)
+    @ManyToOne(() => Product, product => product.inventory_used)
     @JoinColumn()
     product: Product
 
-    @ManyToOne(() => InventoryType, (inventory_type) => inventory_type.inventory_used)
+    @ManyToOne(() => InventoryType, inventory_type => inventory_type.inventory_used)
     @JoinColumn()
     inventory_type: InventoryType
 

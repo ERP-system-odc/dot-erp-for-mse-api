@@ -4,6 +4,7 @@ import { AppDataSource } from "./data-source"
 import { authRouter } from "./routes/auth"
 import { firmDefinitionRouter } from "./routes/firmDefinition"
 import { inventoryManagementRouter } from "./routes/inventoryManagement"
+import { usedInventoryRouter } from "./routes/usedInventory"
 const cookieParser=require("cookie-parser")
 const app:Application=express()
 const cors=require('cors')
@@ -28,6 +29,7 @@ app.use(express.json())
 app.use("/api/auth",authRouter)
 app.use("/api/firmDefinition",firmDefinitionRouter)
 app.use("/api/inventory/",inventoryManagementRouter)
+app.use("/api/usedInventory",usedInventoryRouter)
 
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;

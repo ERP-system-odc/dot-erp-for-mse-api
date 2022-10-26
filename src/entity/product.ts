@@ -16,7 +16,7 @@ export class Product{
     product_quantity:number
 
     @Column({type:"double"})
-    product_SellingPrice:number
+    product_selling_price:number
 
     @CreateDateColumn()
     created_at:Date
@@ -28,8 +28,8 @@ export class Product{
     // @JoinColumn()
     // inventory_type:InventoryType
 
-    @OneToMany(()=>InventoryType,inventory_type=>inventory_type.products)
-    inventory_types:InventoryType[]
+    // @OneToMany(()=>InventoryType,inventory_type=>inventory_type.products)
+    // inventory_types:InventoryType[]
 
     @OneToMany(()=>InventoryUsed,inventory_used=>inventory_used.product)
     inventory_used:InventoryUsed[]
