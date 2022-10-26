@@ -28,7 +28,7 @@ export const defineFirm=async(req,res,next)=>{
             message:"Firm already exists"
         })
         let firm=new Firm()
-        firm.business_name=req.body.business_name
+        firm.business_name=req.body.business_name 
         firm.business_type="manufacturing"
         firm.business_sub_type=req.body.business_sub_type
         firm.initial_capital=req.body.business_capital
