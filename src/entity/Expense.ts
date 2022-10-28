@@ -18,10 +18,6 @@ export class Expense{
     expense_amount:number
 
     
-    @Column({
-        type:"int"
-    })
-    total_amount:number
 
     @CreateDateColumn()
     created_at:Date

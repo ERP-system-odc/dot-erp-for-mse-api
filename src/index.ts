@@ -33,12 +33,9 @@ app.use("/api/auth",authRouter)
 app.use("/api/firmDefinition",firmDefinitionRouter)
 app.use("/api/inventory/",inventoryManagementRouter)
 app.use("/api/standard/",standardManagementRouter)
-<<<<<<< HEAD
 app.use("/api/expense",expenseRouter)
-=======
 app.use("/api/product/",productRouter)
 
->>>>>>> ac1887fbe045993fb1664a6bef7ec9c99b35de53
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
     const errorMessage=err.message || "Something went wrong!";
