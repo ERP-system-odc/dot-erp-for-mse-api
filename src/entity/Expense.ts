@@ -8,7 +8,7 @@ export class Expense{
     id: number
 
     @Column()
-    expense_name:string
+   expense_name :string
 
     @Column(
         {
@@ -16,6 +16,12 @@ export class Expense{
         }  
     )
     expense_amount:number
+
+    
+    @Column({
+        type:"int"
+    })
+    total_amount:number
 
     @CreateDateColumn()
     created_at:Date

@@ -2,6 +2,7 @@ require("dotenv").config()
 import express, { Request, Response,Application } from "express"
 import { AppDataSource } from "./data-source"
 import { authRouter } from "./routes/auth"
+import { expenseRouter } from "./routes/expenseRoute"
 import { firmDefinitionRouter } from "./routes/firmDefinition"
 import { inventoryManagementRouter } from "./routes/inventoryManagement"
 import { standardManagementRouter } from "./routes/standardManagement"
@@ -32,7 +33,7 @@ app.use("/api/firmDefinition",firmDefinitionRouter)
 app.use("/api/inventory/",inventoryManagementRouter)
 app.use("/api/usedInventory",usedInventoryRouter)
 app.use("/api/standard/",standardManagementRouter)
-
+app.use("/api/expense",expenseRouter)
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
     const errorMessage=err.message || "Something went wrong!";
