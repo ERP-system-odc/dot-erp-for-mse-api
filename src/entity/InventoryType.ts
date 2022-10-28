@@ -38,7 +38,5 @@ export class InventoryType{
     // @ManyToOne(() => Product, (product) => product.inventory_types)
     // products: Product
 
-    @OneToMany(()=>InventoryUsed,inventory_used=>inventory_used.inventory_type)
-    inventory_used:InventoryUsed[]
 
 }

@@ -28,10 +28,7 @@ export class InventoryUsed{
     @JoinColumn()
     product: Product
 
-    @ManyToOne(() => InventoryType, inventory_type => inventory_type.inventory_used)
-    @JoinColumn()
-    inventory_type: InventoryType
 
-    
+   
 
 }

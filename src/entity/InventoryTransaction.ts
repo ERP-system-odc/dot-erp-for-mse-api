@@ -31,10 +31,14 @@ export class InventoryTransaction{
     })
     total_price:number
 
-    @Column()
+    @Column({
+        type:"int"
+    })
     initial_quantity:number
 
-    @Column()
+    @Column({
+        type:"int"
+    })
     current_quantity:number
 
     @CreateDateColumn()

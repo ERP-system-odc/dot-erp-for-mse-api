@@ -5,7 +5,8 @@ import { authRouter } from "./routes/auth"
 import { firmDefinitionRouter } from "./routes/firmDefinition"
 import { inventoryManagementRouter } from "./routes/inventoryManagement"
 import { standardManagementRouter } from "./routes/standardManagement"
-import { usedInventoryRouter } from "./routes/usedInventory"
+import { productRouter } from "./routes/product"
+
 const cookieParser=require("cookie-parser")
 const app:Application=express()
 const cors=require('cors')
@@ -30,8 +31,8 @@ app.use(express.json())
 app.use("/api/auth",authRouter)
 app.use("/api/firmDefinition",firmDefinitionRouter)
 app.use("/api/inventory/",inventoryManagementRouter)
-app.use("/api/usedInventory",usedInventoryRouter)
 app.use("/api/standard/",standardManagementRouter)
+app.use("/api/product/",productRouter)
 
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
@@ -46,7 +47,7 @@ app.use((err,req:Request,res:Response,next)=>{
 
 })
 
+
 app.listen(process.env.PORT_NUMBER,()=>{
     console.log("Server connected successfully!")
 })
-

@@ -34,11 +34,11 @@ export const standardDataValidation=async(req,res,next)=>{
                 "status":400,
                 "message":error.message
             })
-            req.body.inventory_name=parseInt(element.inventory_quantity)
             
+           element.inventory_quantity=parseInt(element.inventory_quantity) 
         });
                   
-      console.log(req.body)       
+           
         next();
     }
     catch(err){

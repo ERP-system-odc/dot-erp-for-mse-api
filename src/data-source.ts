@@ -10,7 +10,8 @@ import { StandardSetting } from "./entity/StandardSettings"
 
 import { InventoryUsed } from "./entity/inventoryUsed"
 import { Product } from "./entity/product"
-// import { WorkInProgress } from "./entity/workInProgress"
+import { Income } from "./entity/Income"
+
 export const AppDataSource = new DataSource({
     type: "mysql",
     host: "localhost",
@@ -20,7 +21,7 @@ export const AppDataSource = new DataSource({
     database: "mse_erp_db",
     synchronize: true,
     logging: false,
-    entities: [User,Firm,Expense,InventoryTransaction,InventoryType,InventoryUsed,Product,Standard,StandardSetting],
+    entities: [User,Firm,Expense,InventoryTransaction,InventoryType,InventoryUsed,Product,Standard,StandardSetting,Income],
     migrations: [],
     subscribers: [],
 })
