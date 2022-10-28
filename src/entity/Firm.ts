@@ -3,6 +3,8 @@ import { Expense } from "./Expense"
 import { InventoryType } from "./InventoryType"
 import { User } from "./User"
 import { Standard } from "./Standard"
+import { Product } from "./product"
+import { Income } from "./Income"
 
 
 @Entity({name:"firms"})
@@ -55,6 +57,12 @@ export class Firm{
     inventory_types:InventoryType[]
     @OneToMany(()=>Standard,standard=>standard.firm)
     standards:Standard[]
+
+    @OneToMany(()=>Product,product=>product.firm)
+    products:Product[]
+
+     @OneToMany(()=>Income,income=>income.firm)
+    incomes:Income[]
     
 
     
