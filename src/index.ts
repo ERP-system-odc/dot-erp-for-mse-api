@@ -34,6 +34,8 @@ app.use("/api/firmDefinition",firmDefinitionRouter)
 app.use("/api/inventory/",inventoryManagementRouter)
 app.use("/api/standard/",standardManagementRouter)
 app.use("/api/expense",expenseRouter)
+app.use("/api/product/",productRouter)
+
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
     const errorMessage=err.message || "Something went wrong!";

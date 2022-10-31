@@ -18,8 +18,14 @@ export const expenseDataValidation=async(req,res,next)=>{
                 "message":error.message
             })
         }
+        req.body.expense_amount=parseFloat(req.body.expense_amount)
     
-       
+       if(req.body.expense_amount<=0){
+        return res.status(400).json({
+            "status":400,
+            "message":"Please enter expense greater than zero"
+        })
+       }
             
              
         next();

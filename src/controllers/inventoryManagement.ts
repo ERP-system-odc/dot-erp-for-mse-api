@@ -27,7 +27,11 @@ return res.status(404).json({
     "message":"Inventories not found"
 })
 
-return res.status(200).json(foundInventoryTypes)
+return res.status(200).json({
+    foundInventoryTypes,
+    status:200,
+    data:foundInventoryTypes
+})
 
 }
 export const createInventory=async(req,res,next)=>{

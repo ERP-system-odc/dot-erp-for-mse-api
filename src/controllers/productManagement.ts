@@ -47,63 +47,19 @@ export let addToStock=async (req,res,next)=>{
     let originalStandard=foundStandard.standard_settings
 
    
-    let inventoriesUsedForOneProduct=[]
-   
-    if(req.body.product_quantity>1){
-       inventoriesUsedForOneProduct =[...req.body.product_items]
-       inventoriesUsedForOneProduct.forEach(element => {
-        element.iu_quantity=element.iu_quantity/req.body.product_quantity
-       });
-
- 
-    }
-    else{
-        inventoriesUsedForOneProduct=[...req.body.product_items]
-    }
-    
-    for(let x=0;x<originalStandard.length;x++){
-        const foundInventoryUsed=await inventoriesUsedForOneProduct.find(el=>el.iu_name==originalStandard[x].inventory_name)
-         if(!foundInventoryUsed)
-          return res.status(412).json({
-               status:412,
-               "message":"The product doesn't meet standard"
-           })
-        if(foundInventoryUsed.iu_quantity!=originalStandard[x].inventory_quantity)
-           {
-               if(foundInventoryUsed.iu_quantity>originalStandard[x].inventory_quantity)
-               return res.status(412).json({
-                   status:412,
-                   message:`You are using ${foundInventoryUsed.iu_quantity-originalStandard[x].inventory_quantity} more ${originalStandard[x].inventory_name}`
-               })
-                  
-                else if(foundInventoryUsed.iu_quantity<originalStandard[x].inventory_quantity)
-                return res.status(412).json({
-                   status:412,
-                   message:`You are using ${originalStandard[x].inventory_quantity-foundInventoryUsed.iu_quantity} less  of ${originalStandard[x].inventory_name}`
-                  })
-                  
-                 
-           }
-         
-   }
-   if(req.body.product_quantity>1){
-    inventoriesUsedForOneProduct =[...req.body.product_items]
-    inventoriesUsedForOneProduct.forEach(element => {
-     element.iu_quantity=element.iu_quantity*req.body.product_quantity
-    });
 
 
- }
+
         let productInventoryCost=0
         
     
        
-   for(let y=0;y<req.body.product_items.length;y++){    
-    let currentQuantity=req.body.product_items[y].iu_quantity    
-    let foundInventoryType=await inventoryTypeRepository.findOneBy({inventory_name:req.body.product_items[y].iu_name,firm:foundFirm})
+   for(let y=0;y<originalStandard.length;y++){    
+    
+    let foundInventoryType=await inventoryTypeRepository.findOneBy({inventory_name:originalStandard[y].inventory_name,firm:foundFirm})
 
-        productInventoryCost+=foundInventoryType.inventory_price*req.body.product_items[y].iu_quantity
-    foundInventoryType.total_amount-=req.body.product_items[y].iu_quantity
+        productInventoryCost+=foundInventoryType.inventory_price*originalStandard[y].inventory_quantity*req.body.product_quantity
+    foundInventoryType.total_amount-=originalStandard[y].inventory_quantity*req.body.product_quantity
     await inventoryTypeRepository.save(foundInventoryType)
    
            
@@ -121,11 +77,11 @@ export let addToStock=async (req,res,next)=>{
         product.firm=foundFirm
     
         await productRepository.save(product)
-    console.log(req.body.product_items)
-        req.body.product_items.forEach(async element=>{
+    console.log(originalStandard)
+        originalStandard.forEach(async element=>{
             let inventoryUsed=new InventoryUsed()
-            inventoryUsed.iu_name=element.iu_name
-            inventoryUsed.iu_quantity=element.iu_quantity
+            inventoryUsed.iu_name=element.inventory_name
+            inventoryUsed.iu_quantity=element.inventory_quantity*req.body.product_quantity
             inventoryUsed.product=product
             await inventoryUsedRepository.save(inventoryUsed)
         })
@@ -135,10 +91,10 @@ export let addToStock=async (req,res,next)=>{
         foundProduct.product_inventory_cost=req.body.product_selling_price
         foundProduct.product_inventory_cost+=productInventoryCost
         await productRepository.save(foundProduct)
-        req.body.product_items.forEach(async element=>{
+        originalStandard.forEach(async element=>{
             let inventoryUsed=new InventoryUsed()
-            inventoryUsed.iu_name=element.iu_name
-            inventoryUsed.iu_quantity=element.iu_quantity
+            inventoryUsed.iu_name=element.inventory_name
+            inventoryUsed.iu_quantity=element.inventory_quantity*req.body.product_quantity
             inventoryUsed.product=foundProduct
             await inventoryUsedRepository.save(inventoryUsed)
         })
