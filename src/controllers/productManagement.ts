@@ -21,11 +21,12 @@ export let addToStock=async (req,res,next)=>{
     const inventoryTransactionRepository=AppDataSource.getRepository(InventoryTransaction)
     const inventoryTypeRepository=AppDataSource.getRepository(InventoryType)
     const inventoryUsedRepository=AppDataSource.getRepository(InventoryUsed)
+    
     const expenseRepository=AppDataSource.getRepository(Expense)
     const productRepository=AppDataSource.getRepository(Product)
     const foundFirm=await firmRepository.findOneBy({user:foundUser})
     
-  
+    
     if(!foundFirm)
         return res.status(404).json({
             "status":404,
@@ -45,7 +46,16 @@ export let addToStock=async (req,res,next)=>{
     })
    
     let originalStandard=foundStandard.standard_settings
-
+    
+    for(let x=0;x<originalStandard.length;x++){
+        let invType=await inventoryTypeRepository.findOneBy({inventory_name:originalStandard[x].inventory_name,firm:foundFirm})
+        if((originalStandard[x].inventory_quantity)*req.body.product_quantity>invType.total_amount){
+            return res.status(412).json({
+                status:412,
+                message:"Amount of inventories required to produce isnot available"
+            })
+        }
+    }
    
 
 
@@ -53,12 +63,42 @@ export let addToStock=async (req,res,next)=>{
         let productInventoryCost=0
         
     
-       
+       let availableQuantity=0
    for(let y=0;y<originalStandard.length;y++){    
+   availableQuantity=originalStandard[y].inventory_quantity*req.body.product_quantity
+    
+    
     
     let foundInventoryType=await inventoryTypeRepository.findOneBy({inventory_name:originalStandard[y].inventory_name,firm:foundFirm})
-
-        productInventoryCost+=foundInventoryType.inventory_price*originalStandard[y].inventory_quantity*req.body.product_quantity
+    let foundInventoryTransactions=await inventoryTransactionRepository.find({
+        where:{
+            inventory_type:foundInventoryType,
+            current_quantity:MoreThan(0)
+        }
+    })
+    if(!foundInventoryTransactions)
+    return res.status(404).json({
+        "message":"Inventories aren't enough to process this request"
+    })
+    for(let z=0;z<foundInventoryTransactions.length;z++){
+        if(availableQuantity>0){
+            if(availableQuantity>foundInventoryTransactions[z].current_quantity){
+                productInventoryCost+=(availableQuantity-foundInventoryTransactions[z].current_quantity)*foundInventoryTransactions[z].unit_price
+                availableQuantity-=foundInventoryTransactions[z].current_quantity
+                foundInventoryTransactions[z].current_quantity=0;
+                await inventoryTransactionRepository.save(foundInventoryTransactions[z])
+                
+            }
+            else if(availableQuantity<=foundInventoryTransactions[z].current_quantity){
+                productInventoryCost+=(foundInventoryTransactions[z].current_quantity-availableQuantity)*foundInventoryTransactions[z].unit_price
+                foundInventoryTransactions[z].current_quantity-=availableQuantity
+                availableQuantity=0;
+                await inventoryTransactionRepository.save(foundInventoryTransactions[z])
+            }   
+        }
+    }
+console.log(productInventoryCost)
+      //  productInventoryCost+=foundInventoryType.inventory_price*originalStandard[y].inventory_quantity*req.body.product_quantity
     foundInventoryType.total_amount-=originalStandard[y].inventory_quantity*req.body.product_quantity
     await inventoryTypeRepository.save(foundInventoryType)
    
@@ -77,7 +117,7 @@ export let addToStock=async (req,res,next)=>{
         product.firm=foundFirm
     
         await productRepository.save(product)
-    console.log(originalStandard)
+
         originalStandard.forEach(async element=>{
             let inventoryUsed=new InventoryUsed()
             inventoryUsed.iu_name=element.inventory_name

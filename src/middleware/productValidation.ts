@@ -4,7 +4,7 @@ const Joi=require("joi")
 
 
 export const productDataValidation=async(req,res,next)=>{
-    console.log(req.body)
+
     const productData={
        
         product_quantity:req.body.product_quantity,
