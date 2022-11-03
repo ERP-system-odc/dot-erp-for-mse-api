@@ -269,7 +269,7 @@ export const sellStock=async(req,res,next)=>{
         foundProduct.product_quantity-=1
         await productRepository.save(foundProduct)
         let income=new Income()
-        income.income_name="SOLD PRODUCT"
+        income.income_name="SOLD "+foundProduct.product_name
         income.income_amount=foundProduct.product_selling_price
         income.firm=foundFirm
         await incomeRepository.save(income)
