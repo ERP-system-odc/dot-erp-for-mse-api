@@ -2,6 +2,7 @@ import { User } from "../entity/User";
 import { Firm } from "../entity/Firm";
 import { Expense } from "../entity/Expense";
 import { AppDataSource } from "../data-source";
+import { JournalEntry } from "../entity/journalEntry";
 
 export const getAllExpenses=async(req,res,next)=>{
     try{
@@ -40,6 +41,7 @@ export const getAllExpenses=async(req,res,next)=>{
  
 export const createExpense=async(req,res,next)=>{
     try{
+const journalEntryRepository=AppDataSource.getRepository(JournalEntry)
 const userRepository=AppDataSource.getRepository(User)
 const foundUser=await userRepository.findOneBy({id:req.user.id})
 const firmRepository=AppDataSource.getRepository(Firm)
@@ -67,6 +69,22 @@ await expenseRepository.save(expense)
 
 foundFirm.current_capital-=req.body.expense_amount
 await firmRepository.save(foundFirm)
+
+const journalEntry=new JournalEntry()
+journalEntry.account="ASSET("+req.body.expense_name+")"
+journalEntry.debit=req.body.expense_amount
+journalEntry.credit=0
+journalEntry.firm=foundFirm
+
+await journalEntryRepository.save(journalEntry)
+
+const journalEntrySecond=new JournalEntry()
+journalEntrySecond.account="LIABILITY(Cash)"
+journalEntrySecond.debit=0
+journalEntrySecond.credit=req.body.expense_amount
+journalEntrySecond.firm=foundFirm
+
+await journalEntryRepository.save(journalEntrySecond)
 return res.status(200).json({
     status:200,
     message:"Expense saved successfully"

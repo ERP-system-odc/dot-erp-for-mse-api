@@ -10,9 +10,11 @@ import { MoreThan, SimpleConsoleLogger } from "typeorm";
 import { InventoryTransaction } from "../entity/InventoryTransaction";
 import { Expense } from "../entity/Expense";
 import { Income } from "../entity/Income";
+import { JournalEntry } from "../entity/journalEntry";
 
 export let addToStock=async (req,res,next)=>{
     try{
+    const journalEntryRepository=AppDataSource.getRepository(JournalEntry)
     const userRepository=AppDataSource.getRepository(User)   
     const foundUser=await userRepository.findOneBy({id:req.user.id}) 
     const firmRepository=AppDataSource.getRepository(Firm)
@@ -158,6 +160,24 @@ console.log(productInventoryCost)
         foundFirm.current_capital-=expense.expense_amount
         await firmRepository.save(foundFirm)
     }
+    if(req.body.product_expense>0){
+        const journalEntry=new JournalEntry()
+        journalEntry.account="ASSET(Product:"+req.body.product_standard+" Expense)"
+        journalEntry.debit=req.body.product_expense
+        journalEntry.credit=0
+        journalEntry.firm=foundFirm
+        
+       await journalEntryRepository.save(journalEntry)
+    
+        const journalEntrySecond=new JournalEntry()
+        journalEntrySecond.account="LIABILITY(Cash)"
+        journalEntrySecond.debit=0
+        journalEntrySecond.credit=req.body.product_expense
+        journalEntrySecond.firm=foundFirm
+        
+        await journalEntryRepository.save(journalEntrySecond)
+    }
+
     res.status(200).json(
         {
             status:200,
@@ -246,6 +266,7 @@ next(err)
 }
 export const sellStock=async(req,res,next)=>{
     try{
+        const journalEntryRepository=AppDataSource.getRepository(JournalEntry)
         const userRepository=AppDataSource.getRepository(User)   
         const foundUser=await userRepository.findOneBy({id:req.user.id}) 
         const firmRepository=AppDataSource.getRepository(Firm)
@@ -275,6 +296,23 @@ export const sellStock=async(req,res,next)=>{
         await incomeRepository.save(income)
         foundFirm.current_capital+=foundProduct.product_selling_price
         await firmRepository.save(foundFirm)
+
+        const journalEntry=new JournalEntry()
+        journalEntry.account="ASSET(Cash)"
+        journalEntry.debit=foundProduct.product_selling_price
+        journalEntry.credit=0
+        journalEntry.firm=foundFirm
+        
+        await journalEntryRepository.save(journalEntry)
+    console.log(journalEntry)
+        const journalEntrySecond=new JournalEntry()
+        journalEntrySecond.account="LIABILITY(Revenue from "+foundProduct.product_name+")"
+        journalEntrySecond.debit=0
+        journalEntrySecond.credit=foundProduct.product_selling_price
+        journalEntrySecond.firm=foundFirm
+        
+        await journalEntryRepository.save(journalEntrySecond)
+        console.log(journalEntrySecond)
         res.status(200).json({
             status:200,
             message:"Product sold successfully"

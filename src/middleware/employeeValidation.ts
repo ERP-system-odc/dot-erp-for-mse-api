@@ -1,32 +1,32 @@
-import { employeeSchema } from "../validationSchema/employeeSchema"
-const Joi=require("joi")
+// import { employeeSchema } from "../validationSchema/employeeSchema"
+// const Joi=require("joi")
 
-export const employeeDataValidation=async(req,res,next)=>{
+// export const employeeDataValidation=async(req,res,next)=>{
 
-    const employeeData={ 
+//     const employeeData={ 
         
-        employee_name:req.body.employee_name,
-        salary_amount:req.body.salary_amount,
-        payment_schedule:req.body.payment_schedule        
+//         employee_name:req.body.employee_name,
+//         salary_amount:req.body.salary_amount,
+//         payment_schedule:req.body.payment_schedule        
       
-    }
-    try{
-        const {error, value} =employeeSchema.validate(employeeData,{abortEarly:false})
+//     }
+//     try{
+//         const {error, value} =employeeSchema.validate(employeeData,{abortEarly:false})
       
-        if(error){
-            return res.status(400).json({
-                "status":400,
-                "message":error.message
-            })
-        }
+//         if(error){
+//             return res.status(400).json({
+//                 "status":400,
+//                 "message":error.message
+//             })
+//         }
     
        
             
              
-        next();
-    }
-    catch(err){
-        next(err)
-    }
+//         next();
+//     }
+//     catch(err){
+//         next(err)
+//     }
 
-}
+// }

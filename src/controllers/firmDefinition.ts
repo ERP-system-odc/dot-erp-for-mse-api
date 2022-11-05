@@ -1,6 +1,7 @@
 import { User } from "../entity/User";
 import { Firm } from "../entity/Firm";
 import { AppDataSource } from "../data-source";
+import { JournalEntry } from "../entity/journalEntry";
 
 export const defineFirm=async(req,res,next)=>{
    
@@ -8,6 +9,7 @@ export const defineFirm=async(req,res,next)=>{
     try{
         const userRepository=AppDataSource.getRepository(User)
         const firmRepository=AppDataSource.getRepository(Firm)
+        const journalEntryRepository=AppDataSource.getRepository(JournalEntry)
 
         const user_id=req.user.id
         const userFound=await userRepository.findOneBy({id:user_id})
@@ -36,7 +38,7 @@ export const defineFirm=async(req,res,next)=>{
         firm.tin_number=req.body.tin_number
         firm.user=userFound
 
-        
+       
 
         await firmRepository.save(firm)
 
@@ -44,6 +46,22 @@ export const defineFirm=async(req,res,next)=>{
 
         await userRepository.save(userFound)
         
+        const journalEntry=new JournalEntry()
+        journalEntry.account="ASSET(Cash)"
+        journalEntry.debit=req.body.business_capital
+        journalEntry.credit=0
+        journalEntry.firm=firm
+        
+        journalEntryRepository.save(journalEntry)
+
+        const journalEntrySecond=new JournalEntry()
+        journalEntrySecond.account="LIABILITY(Common Stock)"
+        journalEntrySecond.debit=0
+        journalEntrySecond.credit=req.body.business_capital
+        journalEntrySecond.firm=firm
+        
+        journalEntryRepository.save(journalEntrySecond)
+    
         res.status(200).json({
             "status":200,
             "message":"Firm creation is successful",

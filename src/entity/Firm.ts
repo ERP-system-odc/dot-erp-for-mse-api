@@ -5,6 +5,7 @@ import { User } from "./User"
 import { Standard } from "./Standard"
 import { Product } from "./product"
 import { Income } from "./Income"
+import { JournalEntry } from "./journalEntry"
 
 
 @Entity({name:"firms"})
@@ -63,6 +64,8 @@ export class Firm{
 
      @OneToMany(()=>Income,income=>income.firm)
     incomes:Income[]
+    @OneToMany(()=>JournalEntry,journal_entry=>journal_entry.firm)
+    journal_entry:Income[]
     
 
     

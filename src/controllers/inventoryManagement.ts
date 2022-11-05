@@ -4,6 +4,7 @@ import { InventoryType } from "../entity/InventoryType";
 import { InventoryTransaction } from "../entity/InventoryTransaction";
 import { Expense } from "../entity/Expense";
 import { AppDataSource } from "../data-source";
+import { JournalEntry } from "../entity/journalEntry";
 
 export const getAllInventories=async(req,res,next)=>{
     const userRepository=AppDataSource.getRepository(User)
@@ -36,6 +37,7 @@ return res.status(200).json({
 }
 export const createInventory=async(req,res,next)=>{
     try{
+const journalEntryRepository=AppDataSource.getRepository(JournalEntry)
 const userRepository=AppDataSource.getRepository(User)
 const foundUser=await userRepository.findOneBy({id:req.user.id})
 const firmRepository=AppDataSource.getRepository(Firm)
@@ -84,10 +86,26 @@ expense.firm=foundFirm
 await expenseRepository.save(expense)}
 foundFirm.current_capital=foundFirm.current_capital-(req.body.inventory_quantity*req.body.inventory_price+req.body.inventory_expense)
 await firmRepository.save(foundFirm)
+const journalEntry=new JournalEntry()
+        journalEntry.account="ASSET(Inventory:"+req.body.inventory_name+")"
+        journalEntry.debit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
+        journalEntry.credit=0
+        journalEntry.firm=foundFirm
+        
+        await journalEntryRepository.save(journalEntry)
+
+        const journalEntrySecond=new JournalEntry()
+        journalEntrySecond.account="LIABILITY(Cash)"
+        journalEntrySecond.debit=0
+        journalEntrySecond.credit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
+        journalEntrySecond.firm=foundFirm
+        
+       await journalEntryRepository.save(journalEntrySecond)
 return res.status(200).json({
     status:200,
     message:"Inventory saved successfully"
 })
+
 }
 foundInventoryType.inventory_price=req.body.inventory_price
 foundInventoryType.firm=foundFirm
@@ -112,10 +130,28 @@ await expenseRepository.save(expense)
 }
 foundFirm.current_capital=foundFirm.current_capital-(req.body.inventory_quantity*req.body.inventory_price+req.body.inventory_expense)
 await firmRepository.save(foundFirm)
+
+const journalEntry=new JournalEntry()
+        journalEntry.account="ASSET(Inventory:"+req.body.inventory_name+")"
+        journalEntry.debit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
+        journalEntry.credit=0
+        journalEntry.firm=foundFirm
+        
+        await journalEntryRepository.save(journalEntry)
+
+        const journalEntrySecond=new JournalEntry()
+        journalEntrySecond.account="LIABILITY(Cash)"
+        journalEntrySecond.debit=0
+        journalEntrySecond.credit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
+        journalEntrySecond.firm=foundFirm
+        
+       await journalEntryRepository.save(journalEntrySecond)
 res.status(200).json({
     status:200,
     message:"Inventory saved successfully"
 })
+
+        
     }
     catch(err){
         next(err)

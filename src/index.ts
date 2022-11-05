@@ -6,6 +6,7 @@ import { expenseRouter } from "./routes/expenseRoute"
 import { firmDefinitionRouter } from "./routes/firmDefinition"
 import { inventoryManagementRouter } from "./routes/inventoryManagement"
 import { standardManagementRouter } from "./routes/standardManagement"
+import { journalEntryManagementRouter } from "./routes/journalEntry"
 import { productRouter } from "./routes/product"
 import moment from "moment";
 const cookieParser=require("cookie-parser")
@@ -35,14 +36,7 @@ app.use("/api/inventory/",inventoryManagementRouter)
 app.use("/api/standard/",standardManagementRouter)
 app.use("/api/expense",expenseRouter)
 app.use("/api/product/",productRouter)
-app.use("/api/test",(req,res)=>{
-    const todayMonth=moment().format("YYYY-MM-DD")
-    const beforeLast=todayMonth.substring(0,todayMonth.lastIndexOf('-'))
-
-    res.status(200).json({
-        message:beforeLast
-    })
-})
+app.use("/api/journalEntry/",journalEntryManagementRouter)
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
     const errorMessage=err.message || "Something went wrong!";
