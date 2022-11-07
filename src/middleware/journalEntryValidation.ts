@@ -3,7 +3,7 @@ const Joi=require("joi")
 
 export const journalEntryDataValidation=async(req,res,next)=>{
 
-let values=req.body.journal_entry_date.split("-")
+let values=req.params.journalDate.split("-")
 if(!values)
 return res.status(400).json({
     status:400,

@@ -5,7 +5,7 @@ import { getJournalEntry } from "../controllers/journalEntry";
 
 const journalEntryManagementRouter:Router=express.Router()
 
-journalEntryManagementRouter.post('/manage',verifyToken,verifyUser,journalEntryDataValidation,getJournalEntry)
+journalEntryManagementRouter.get('/manage/:journalDate',verifyToken,verifyUser,journalEntryDataValidation,getJournalEntry)
 
 
 

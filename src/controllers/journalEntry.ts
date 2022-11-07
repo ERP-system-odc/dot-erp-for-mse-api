@@ -17,8 +17,7 @@ const firmRepository=AppDataSource.getRepository(Firm)
 
 
 
-if(req.body.inventory_expense==null)
-req.body.inventory_expense=0
+
 
 const foundFirm=await firmRepository.findOneBy({user:foundUser})
 if(!foundFirm)
@@ -29,8 +28,8 @@ return res.status(404).json({
 let  date = new Date();
 
     
-let day=req.body.journal_entry_date
-let dates=req.body.journal_entry_date.split("-")
+let day=req.params.journalDate
+let dates=req.params.journalDate.split("-")
 let result = add(new Date(parseInt(dates[0]), parseInt(dates[1]), parseInt(dates[2])), {
     years: 0,
     months: -1,
