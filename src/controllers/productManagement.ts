@@ -42,7 +42,7 @@ export let addToStock=async (req,res,next)=>{
         where:{standard_name:req.body.product_standard,firm:foundFirm}})
       
     if(!foundStandard)
-    return res.status(404).json({
+    return res.status(404).json({       
         status:404,
         message:"Standard isn't found"
     })
@@ -51,6 +51,11 @@ export let addToStock=async (req,res,next)=>{
     
     for(let x=0;x<originalStandard.length;x++){
         let invType=await inventoryTypeRepository.findOneBy({inventory_name:originalStandard[x].inventory_name,firm:foundFirm})
+        if(!invType)
+        return res.status(404).json({
+            status:404,
+            message:"Inventories not found for production"
+        })
         if((originalStandard[x].inventory_quantity)*req.body.product_quantity>invType.total_amount){
             return res.status(412).json({
                 status:412,
@@ -59,9 +64,6 @@ export let addToStock=async (req,res,next)=>{
         }
     }
    
-
-
-
         let productInventoryCost=0
         
     
@@ -103,7 +105,7 @@ console.log(productInventoryCost)
       //  productInventoryCost+=foundInventoryType.inventory_price*originalStandard[y].inventory_quantity*req.body.product_quantity
     foundInventoryType.total_amount-=originalStandard[y].inventory_quantity*req.body.product_quantity
     await inventoryTypeRepository.save(foundInventoryType)
-   
+    
            
     }      
     let foundProduct=await productRepository.findOneBy({

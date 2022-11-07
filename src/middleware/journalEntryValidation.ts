@@ -31,7 +31,7 @@ values[2]=parseInt(values[2])
     
        
         
-        console.log(req.body.journal_entry_date)         
+            
         next();
     }
     catch(err){

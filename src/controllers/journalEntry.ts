@@ -16,6 +16,7 @@ const foundUser=await userRepository.findOneBy({id:req.user.id})
 const firmRepository=AppDataSource.getRepository(Firm)
 
 
+
 if(req.body.inventory_expense==null)
 req.body.inventory_expense=0
 
