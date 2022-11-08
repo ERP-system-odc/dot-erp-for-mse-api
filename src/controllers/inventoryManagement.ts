@@ -67,7 +67,7 @@ inventoryType.inventory_price=req.body.inventory_price
 inventoryType.firm=foundFirm
 inventoryType.least_critical_amount=req.body.least_critical_amount
 inventoryType.total_amount=req.body.inventory_quantity
-console.log(inventoryType)
+
 await inventoryTypeRepository.save(inventoryType)
 const inventoryTransaction=new InventoryTransaction()
 inventoryTransaction.transaction_name="INVENTORY ADDITION"
@@ -91,6 +91,7 @@ const journalEntry=new JournalEntry()
         journalEntry.debit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
         journalEntry.credit=0
         journalEntry.firm=foundFirm
+        journalEntry.transaction_reason="Bought "+req.body.inventory_quantity+" inventory:"+req.body.inventory_name
         
         await journalEntryRepository.save(journalEntry)
 
@@ -99,6 +100,7 @@ const journalEntry=new JournalEntry()
         journalEntrySecond.debit=0
         journalEntrySecond.credit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
         journalEntrySecond.firm=foundFirm
+        journalEntrySecond.transaction_reason="Paid cash for "+req.body.inventory_quantity+" inventory:"+req.body.inventory_name
         
        await journalEntryRepository.save(journalEntrySecond)
 return res.status(200).json({
@@ -136,6 +138,7 @@ const journalEntry=new JournalEntry()
         journalEntry.debit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
         journalEntry.credit=0
         journalEntry.firm=foundFirm
+        journalEntry.transaction_reason="Bought "+req.body.inventory_quantity+" inventory:"+req.body.inventory_name
         
         await journalEntryRepository.save(journalEntry)
 
@@ -144,8 +147,10 @@ const journalEntry=new JournalEntry()
         journalEntrySecond.debit=0
         journalEntrySecond.credit=(req.body.inventory_price*req.body.inventory_quantity)+req.body.inventory_expense
         journalEntrySecond.firm=foundFirm
-        
-       await journalEntryRepository.save(journalEntrySecond)
+        journalEntrySecond.transaction_reason="Paid cash for "+req.body.inventory_quantity+" inventory:"+req.body.inventory_name
+    
+        await journalEntryRepository.save(journalEntrySecond)
+       
 res.status(200).json({
     status:200,
     message:"Inventory saved successfully"

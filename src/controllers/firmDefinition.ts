@@ -51,6 +51,7 @@ export const defineFirm=async(req,res,next)=>{
         journalEntry.debit=req.body.business_capital
         journalEntry.credit=0
         journalEntry.firm=firm
+        journalEntry.transaction_reason="Added cash to the business"
         
         journalEntryRepository.save(journalEntry)
 
@@ -59,6 +60,7 @@ export const defineFirm=async(req,res,next)=>{
         journalEntrySecond.debit=0
         journalEntrySecond.credit=req.body.business_capital
         journalEntrySecond.firm=firm
+        journalEntrySecond.transaction_reason="Paid cash to increase the common stock"
         
         journalEntryRepository.save(journalEntrySecond)
     

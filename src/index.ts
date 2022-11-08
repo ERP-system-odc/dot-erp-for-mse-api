@@ -8,6 +8,7 @@ import { inventoryManagementRouter } from "./routes/inventoryManagement"
 import { standardManagementRouter } from "./routes/standardManagement"
 import { journalEntryManagementRouter } from "./routes/journalEntry"
 import { productRouter } from "./routes/product"
+import { generalLedgerManagementRouter } from "./routes/generalLedger"
 import moment from "moment";
 const cookieParser=require("cookie-parser")
 const app:Application=express()
@@ -37,6 +38,7 @@ app.use("/api/standard/",standardManagementRouter)
 app.use("/api/expense",expenseRouter)
 app.use("/api/product/",productRouter)
 app.use("/api/journalEntry/",journalEntryManagementRouter)
+app.use("/api/generalLedger/",generalLedgerManagementRouter)
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
     const errorMessage=err.message || "Something went wrong!";

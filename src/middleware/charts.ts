@@ -58,7 +58,7 @@ return res.status(404).json({
     let  date = new Date();
     let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
     let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-    console.log(firstDay,lastDay)
+
     let foundExpenses=await expenseRepository.findBy({ 
         created_at: Between(firstDay, lastDay),
         firm:foundFirm         

@@ -101,7 +101,7 @@ export let addToStock=async (req,res,next)=>{
             }   
         }
     }
-console.log(productInventoryCost)
+
       //  productInventoryCost+=foundInventoryType.inventory_price*originalStandard[y].inventory_quantity*req.body.product_quantity
     foundInventoryType.total_amount-=originalStandard[y].inventory_quantity*req.body.product_quantity
     await inventoryTypeRepository.save(foundInventoryType)
@@ -165,17 +165,19 @@ console.log(productInventoryCost)
     if(req.body.product_expense>0){
         const journalEntry=new JournalEntry()
         journalEntry.account="ASSET(Product:"+req.body.product_standard+" Expense)"
-        journalEntry.debit=req.body.product_expense
-        journalEntry.credit=0
+        journalEntry.debit=0
+        journalEntry.credit=req.body.product_expense
         journalEntry.firm=foundFirm
+        journalEntry.transaction_reason="Paid cash for creation of product:"+req.body.product_standard
         
        await journalEntryRepository.save(journalEntry)
     
         const journalEntrySecond=new JournalEntry()
         journalEntrySecond.account="LIABILITY(Cash)"
-        journalEntrySecond.debit=0
-        journalEntrySecond.credit=req.body.product_expense
+        journalEntrySecond.debit=req.body.product_expense
+        journalEntrySecond.credit=0
         journalEntrySecond.firm=foundFirm
+        journalEntrySecond.transaction_reason="Expense for creation of product:"+req.body.product_standard
         
         await journalEntryRepository.save(journalEntrySecond)
     }
@@ -304,17 +306,19 @@ export const sellStock=async(req,res,next)=>{
         journalEntry.debit=foundProduct.product_selling_price
         journalEntry.credit=0
         journalEntry.firm=foundFirm
+        journalEntry.transaction_reason="Received cash for the selling of 1 product:"+foundProduct.product_name
         
         await journalEntryRepository.save(journalEntry)
-    console.log(journalEntry)
+  
         const journalEntrySecond=new JournalEntry()
         journalEntrySecond.account="LIABILITY(Revenue from "+foundProduct.product_name+")"
         journalEntrySecond.debit=0
         journalEntrySecond.credit=foundProduct.product_selling_price
         journalEntrySecond.firm=foundFirm
+        journalEntrySecond.transaction_reason="Got a revenue for selling 1 product:"+foundProduct.product_name
         
         await journalEntryRepository.save(journalEntrySecond)
-        console.log(journalEntrySecond)
+    
         res.status(200).json({
             status:200,
             message:"Product sold successfully"

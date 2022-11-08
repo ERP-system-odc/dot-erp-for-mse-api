@@ -9,7 +9,7 @@ return res.status(400).json({
     status:400,
     message:"invalid data"
 })
-console.log(values)
+
 values[0]=parseInt(values[0])
 values[1]=parseInt(values[1])
 values[2]=parseInt(values[2])

@@ -22,6 +22,9 @@ export class JournalEntry{
         type:"double"
     })
     credit:number
+    
+    @Column({})
+    transaction_reason:string
 
      @ManyToOne(() => Firm,
                 firm=>firm.journal_entry)   
