@@ -9,3 +9,8 @@ export class generalLedger{
 
    
 }
+
+export class trialBalance{
+    account:string
+    balance:number
+}

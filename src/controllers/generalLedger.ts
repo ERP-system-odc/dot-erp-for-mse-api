@@ -4,7 +4,7 @@ import { Firm } from "../entity/Firm";
 import { AppDataSource } from "../data-source";
 import {Between, Double, Like, Raw} from "typeorm";
 import {add,format} from "date-fns"
-import { generalLedger } from "../entity/generalLedger";
+import { generalLedger } from "../entity/reportingMechanisms";
 
 
 export const generateGeneralLedger=async (req,res,next)=>{
