@@ -10,6 +10,7 @@ import { journalEntryManagementRouter } from "./routes/journalEntry"
 import { productRouter } from "./routes/product"
 import { generalLedgerManagementRouter } from "./routes/generalLedger"
 import { trialBalanceManagementRouter } from "./routes/trialBalance"
+import { incomeStatementManagementRouter } from "./routes/incomeStatement"
 import moment from "moment";
 const cookieParser=require("cookie-parser")
 const app:Application=express()
@@ -41,6 +42,7 @@ app.use("/api/product/",productRouter)
 app.use("/api/journalEntry/",journalEntryManagementRouter)
 app.use("/api/generalLedger/",generalLedgerManagementRouter)
 app.use("/api/trialBalance",trialBalanceManagementRouter)
+app.use("/api/incomeStatement",incomeStatementManagementRouter)
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
     const errorMessage=err.message || "Something went wrong!";

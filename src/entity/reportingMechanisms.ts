@@ -14,3 +14,8 @@ export class trialBalance{
     account:string
     balance:number
 }
+
+export class incomeStatement{
+    transaction_name:string
+    balance:number
+}
