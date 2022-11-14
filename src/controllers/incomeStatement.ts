@@ -55,9 +55,9 @@ else{
 
 let inventoryExpense=await journalEntryRepository.find({
     where:{
-        account:Like("%ASSET(Inventory%"),
+        transaction_type:Like("%{-EXPENSE-}(Inventory)%"),
         created_at:Between(firstDay,lastDay),
-        debit:MoreThan(0)
+        
 
     }
 })
@@ -78,18 +78,18 @@ else{
 let otherExpenseSum=0
 let otherExpense=await journalEntryRepository.find({
     where:{
-        account:Like("%ASSET%"),
+        transaction_type:Like("%{-EXPENSE-}(Other)%"),
         created_at:Between(firstDay,lastDay),
-        credit:MoreThan(0)
 
     }
 })
+
 
 let incomeStatementOtherExpenseRecord=new incomeStatement()
 incomeStatementOtherExpenseRecord.transaction_name="Other Expense"
 if(otherExpense.length!=0){
     for(let element of otherExpense){
-        otherExpenseSum+=element.credit
+        otherExpenseSum+=element.debit
     }
    incomeStatementOtherExpenseRecord.balance=otherExpenseSum
 

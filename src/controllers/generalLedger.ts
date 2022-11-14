@@ -31,105 +31,451 @@ const journalEntryAssets=await journalEntryRepository.find({
     where:{
         firm:foundFirm,
         created_at:Between(firstDay,lastDay),
-        account:Like("%ASSET%")
+        transaction_type:Like("%{-ASSET-}%")
+        
     }
 
 })
 
-    if(journalEntryAssets.length==0){
-        return res.status(404).json({           
-            status:404,
-            message:"No records are found within this period of time"
-        })
-    }
+ 
 
 let assetGeneralLedger:any=[]
-
-for(let x=0;x<journalEntryAssets.length;x++){
-    let generalLedgerRecord=new generalLedger()
-    generalLedgerRecord.transaction_date=format(journalEntryAssets[x].created_at,'yyyy-MM-d')
-    generalLedgerRecord.description=journalEntryAssets[x].transaction_reason
-    generalLedgerRecord.debit=journalEntryAssets[x].debit
-    generalLedgerRecord.credit=journalEntryAssets[x].credit
-    if(x==0){
-
-        if(journalEntryAssets[x].debit==0){
-            generalLedgerRecord.balance=-1*generalLedgerRecord.credit
+if(journalEntryAssets.length!=0){
+    for(let x=0;x<journalEntryAssets.length;x++){
+        let generalLedgerRecord=new generalLedger()
+        generalLedgerRecord.transaction_date=format(journalEntryAssets[x].created_at,'yyyy-MM-d')
+        generalLedgerRecord.description=journalEntryAssets[x].transaction_reason
+        generalLedgerRecord.debit=journalEntryAssets[x].debit
+        generalLedgerRecord.credit=journalEntryAssets[x].credit
+        if(x==0){
+    
+            if(journalEntryAssets[x].debit==0){
+                generalLedgerRecord.balance_debit=0
+                generalLedgerRecord.balance_credit=generalLedgerRecord.credit
+            }
+            else{
+                generalLedgerRecord.balance_debit=generalLedgerRecord.debit
+                generalLedgerRecord.balance_credit=0
+            }
+    
         }
+    
         else{
-            generalLedgerRecord.balance=generalLedgerRecord.debit
+            if(journalEntryAssets[x].debit==0){
+                if(assetGeneralLedger[x-1].balance_credit>0){
+                    generalLedgerRecord.balance_credit=assetGeneralLedger[x-1].balance_credit+generalLedgerRecord.credit
+                    generalLedgerRecord.balance_debit=0
+                }
+                else if(assetGeneralLedger[x-1].balance_credit==0 && assetGeneralLedger[x-1].balance_debit>0){
+                    if(assetGeneralLedger[x-1].balance_debit>journalEntryAssets[x].credit){
+                        generalLedgerRecord.balance_debit=assetGeneralLedger[x-1].balance_debit-journalEntryAssets[x].credit
+                        generalLedgerRecord.balance_credit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_credit=journalEntryAssets[x].credit-assetGeneralLedger[x-1].balance_debit
+                        generalLedgerRecord.balance_debit=0
+                    }
+                }
+                else if(assetGeneralLedger[x-1].balance_credit==0 && assetGeneralLedger[x-1].balance_debit==0){
+                    generalLedgerRecord.balance_credit=journalEntryAssets[x].credit
+                    generalLedgerRecord.balance_debit=0
+                }
+           
+               
+            }
+            else{
+                if(assetGeneralLedger[x-1].balance_debit>0){
+                    generalLedgerRecord.balance_debit=assetGeneralLedger[x-1].balance_debit+generalLedgerRecord.debit
+                    generalLedgerRecord.balance_credit=0
+                }
+                else if(assetGeneralLedger[x-1].balance_debit==0 && assetGeneralLedger[x-1].balance_credit>0){
+                    if(assetGeneralLedger[x-1].balance_credit>journalEntryAssets[x].debit){
+                        generalLedgerRecord.balance_credit=assetGeneralLedger[x-1].balance_credit-journalEntryAssets[x].debit
+                        generalLedgerRecord.balance_debit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_debit=journalEntryAssets[x].debit-assetGeneralLedger[x-1].balance_credit
+                        generalLedgerRecord.balance_credit=0
+                    }
+                }
+                else if(assetGeneralLedger[x-1].balance_credit==0 && assetGeneralLedger[x-1].balance_debit==0){
+                    generalLedgerRecord.balance_debit=journalEntryAssets[x].debit
+                    generalLedgerRecord.balance_credit=0
+                }
+           
+                
+            }
+            
         }
+        assetGeneralLedger.push(generalLedgerRecord)
+    }
 
-    }
-    else{
-        if(journalEntryAssets[x].debit==0){
-       
-            generalLedgerRecord.balance=assetGeneralLedger[x-1].balance-generalLedgerRecord.credit
-        }
-        else{
-        
-            generalLedgerRecord.balance=assetGeneralLedger[x-1].balance+generalLedgerRecord.debit
-        }
-        
-    }
-    assetGeneralLedger.push(generalLedgerRecord)
 }
 
-for(let element of assetGeneralLedger){
-    element.balance=Math.abs(element.balance)
-}
+
+
 
 const journalEntryLiabilities=await journalEntryRepository.find({
     where:{
         firm:foundFirm,
         created_at:Between(firstDay,lastDay),
-        account:Like("%LIABILITY%")
+        transaction_type:Like("%{-LIABILITY-}%")
     }
 
 })
 
+
 let liabilityGeneralLedger:any=[]
-
-for(let x=0;x<journalEntryLiabilities.length;x++){
-    let generalLedgerRecord=new generalLedger()
-    generalLedgerRecord.transaction_date=format(journalEntryLiabilities[x].created_at,'yyyy-MM-d')
-    generalLedgerRecord.description=journalEntryLiabilities[x].transaction_reason
-    generalLedgerRecord.debit=journalEntryLiabilities[x].debit
-    generalLedgerRecord.credit=journalEntryLiabilities[x].credit
-    if(x==0){
-
-        if(journalEntryLiabilities[x].credit==0){
-            generalLedgerRecord.balance=-1*generalLedgerRecord.debit
+if(journalEntryLiabilities.length!=0){
+    for(let x=0;x<journalEntryLiabilities.length;x++){
+        let generalLedgerRecord=new generalLedger()
+        generalLedgerRecord.transaction_date=format(journalEntryLiabilities[x].created_at,'yyyy-MM-d')
+        generalLedgerRecord.description=journalEntryLiabilities[x].transaction_reason
+        generalLedgerRecord.debit=journalEntryLiabilities[x].debit
+        generalLedgerRecord.credit=journalEntryLiabilities[x].credit
+        if(x==0){
+    
+            if(journalEntryLiabilities[x].credit==0){
+                generalLedgerRecord.balance_debit=generalLedgerRecord.debit
+                generalLedgerRecord.balance_credit=0
+            }
+            else{
+                generalLedgerRecord.balance_credit=generalLedgerRecord.credit
+                generalLedgerRecord.balance_debit=0
+            }
+    
         }
         else{
-            generalLedgerRecord.balance=generalLedgerRecord.credit
+            if(journalEntryLiabilities[x].credit==0){
+                if(liabilityGeneralLedger[x-1].balance_debit>0){
+                    generalLedgerRecord.balance_debit=liabilityGeneralLedger[x-1].balance_debit+generalLedgerRecord.debit
+                    generalLedgerRecord.balance_credit=0
+                }
+                else if(liabilityGeneralLedger[x-1].balance_debit==0 && liabilityGeneralLedger[x-1].balance_debit>0){
+                    if(journalEntryLiabilities[x].debit>liabilityGeneralLedger[x-1].balance_credit){
+                        generalLedgerRecord.balance_debit=journalEntryLiabilities[x].debit-liabilityGeneralLedger[x-1].balance_credit
+                        generalLedgerRecord.balance_credit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_debit=0
+                        generalLedgerRecord.balance_credit=liabilityGeneralLedger[x-1].balance_credit-journalEntryLiabilities[x].debit
+    
+                    }
+                        
+                }
+                else if(liabilityGeneralLedger[x-1].balance_debit==0 && liabilityGeneralLedger[x-1].balance_credit==0){
+                    generalLedgerRecord.balance_debit=journalEntryLiabilities[x].debit
+                    generalLedgerRecord.balance_credit=0
+                }
+               
+            }
+            else{
+                
+                if(liabilityGeneralLedger[x-1].balance_credit>0){
+                    generalLedgerRecord.balance_credit=liabilityGeneralLedger[x-1].balance_credit+generalLedgerRecord.credit
+                    generalLedgerRecord.balance_debit=0
+                }
+                else if(liabilityGeneralLedger[x-1].balance_credit==0 && liabilityGeneralLedger[x-1].balance_debit>0  ){
+                    if(journalEntryLiabilities[x].credit>liabilityGeneralLedger[x-1].balance_debit){
+                        generalLedgerRecord.balance_credit=journalEntryLiabilities[x].credit-liabilityGeneralLedger[x-1].balance_debit
+                        generalLedgerRecord.balance_debit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_credit=0
+                        generalLedgerRecord.balance_debit=liabilityGeneralLedger[x-1].balance_debit-journalEntryLiabilities[x].credit
+    
+                    }
+                        
+                }
+                else if(liabilityGeneralLedger[x-1].balance_debit==0 && liabilityGeneralLedger[x-1].balance_credit==0){
+                    generalLedgerRecord.balance_debit=0
+                    generalLedgerRecord.balance_credit=journalEntryLiabilities[x].credit
+                }
+    
+            }
+            
         }
-
+        liabilityGeneralLedger.push(generalLedgerRecord)
     }
-    else{
-        if(journalEntryLiabilities[x].credit==0){
-     
-            generalLedgerRecord.balance=liabilityGeneralLedger[x-1].balance-generalLedgerRecord.debit
+}
+
+
+
+
+const journalEntryExpenses=await journalEntryRepository.find({
+    where:{
+        firm:foundFirm,
+        created_at:Between(firstDay,lastDay),
+        transaction_type:Like("%{-EXPENSE-}%")
+        
+    }
+
+})
+
+
+
+let expenseGeneralLedger:any=[]
+if(journalEntryExpenses.length!=0){
+    for(let x=0;x<journalEntryExpenses.length;x++){
+        let generalLedgerRecord=new generalLedger()
+        generalLedgerRecord.transaction_date=format(journalEntryExpenses[x].created_at,'yyyy-MM-d')
+        generalLedgerRecord.description=journalEntryExpenses[x].transaction_reason
+        generalLedgerRecord.debit=journalEntryExpenses[x].debit
+        generalLedgerRecord.credit=journalEntryExpenses[x].credit
+        if(x==0){
+    
+            if(journalEntryExpenses[x].debit==0){
+                generalLedgerRecord.balance_debit=0
+                generalLedgerRecord.balance_credit=generalLedgerRecord.credit
+            }
+            else{
+                generalLedgerRecord.balance_debit=generalLedgerRecord.debit
+                generalLedgerRecord.balance_credit=0
+            }
+    
+        }
+    
+        else{
+            if(journalEntryExpenses[x].debit==0){
+                if(expenseGeneralLedger[x-1].balance_credit>0){
+                    generalLedgerRecord.balance_credit=expenseGeneralLedger[x-1].balance_credit+generalLedgerRecord.credit
+                    generalLedgerRecord.balance_debit=0
+                }
+                else if(expenseGeneralLedger[x-1].balance_credit==0 && expenseGeneralLedger[x-1].balance_debit>0){
+                    if(expenseGeneralLedger[x-1].balance_debit>journalEntryExpenses[x].credit){
+                        generalLedgerRecord.balance_debit=expenseGeneralLedger[x-1].balance_debit-journalEntryExpenses[x].credit
+                        generalLedgerRecord.balance_credit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_credit=journalEntryExpenses[x].credit-expenseGeneralLedger[x-1].balance_debit
+                        generalLedgerRecord.balance_debit=0
+                    }
+                }
+                else if(expenseGeneralLedger[x-1].balance_credit==0 && expenseGeneralLedger[x-1].balance_debit==0){
+                    generalLedgerRecord.balance_credit=journalEntryExpenses[x].credit
+                    generalLedgerRecord.balance_debit=0
+                }
+           
+               
+            }
+            else{
+                if(expenseGeneralLedger[x-1].balance_debit>0){
+                    generalLedgerRecord.balance_debit=expenseGeneralLedger[x-1].balance_debit+generalLedgerRecord.debit
+                    generalLedgerRecord.balance_credit=0
+                }
+                else if(expenseGeneralLedger[x-1].balance_debit==0 && expenseGeneralLedger[x-1].balance_credit>0){
+                    if(expenseGeneralLedger[x-1].balance_credit>journalEntryExpenses[x].debit){
+                        generalLedgerRecord.balance_credit=expenseGeneralLedger[x-1].balance_credit-journalEntryExpenses[x].debit
+                        generalLedgerRecord.balance_debit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_debit=journalEntryExpenses[x].debit-expenseGeneralLedger[x-1].balance_credit
+                        generalLedgerRecord.balance_credit=0
+                    }
+                }
+                else if(expenseGeneralLedger[x-1].balance_credit==0 && expenseGeneralLedger[x-1].balance_debit==0){
+                    generalLedgerRecord.balance_debit=journalEntryExpenses[x].debit
+                    generalLedgerRecord.balance_credit=0
+                }
+           
+                
+            }
+            
+        }
+        expenseGeneralLedger.push(generalLedgerRecord)
+    }
+    
+    
+}
+
+
+const journalEntryRevenues=await journalEntryRepository.find({
+    where:{
+        firm:foundFirm,
+        created_at:Between(firstDay,lastDay),
+        account:Like("%REVENUE%")
+    }
+
+})
+
+
+let revenueGeneralLedger:any=[]
+if(journalEntryRevenues.length!=0){
+    for(let x=0;x<journalEntryRevenues.length;x++){
+        let generalLedgerRecord=new generalLedger()
+        generalLedgerRecord.transaction_date=format(journalEntryRevenues[x].created_at,'yyyy-MM-d')
+        generalLedgerRecord.description=journalEntryRevenues[x].transaction_reason
+        generalLedgerRecord.debit=journalEntryRevenues[x].debit
+        generalLedgerRecord.credit=journalEntryRevenues[x].credit
+        if(x==0){
+    
+            if(journalEntryRevenues[x].credit==0){
+                generalLedgerRecord.balance_debit=generalLedgerRecord.debit
+                generalLedgerRecord.balance_credit=0
+            }
+            else{
+                generalLedgerRecord.balance_credit=generalLedgerRecord.credit
+                generalLedgerRecord.balance_debit=0
+            }
+    
         }
         else{
-        
-            generalLedgerRecord.balance=liabilityGeneralLedger[x-1].balance+generalLedgerRecord.credit
+            if(journalEntryRevenues[x].credit==0){
+                if(revenueGeneralLedger[x-1].balance_debit>0){
+                    generalLedgerRecord.balance_debit=revenueGeneralLedger[x-1].balance_debit+generalLedgerRecord.debit
+                    generalLedgerRecord.balance_credit=0
+                }
+                else if(revenueGeneralLedger[x-1].balance_debit==0 && revenueGeneralLedger[x-1].balance_credit>0){
+                    if(journalEntryRevenues[x].debit>revenueGeneralLedger[x-1].balance_credit){
+                        generalLedgerRecord.balance_debit=journalEntryRevenues[x].debit-revenueGeneralLedger[x-1].balance_credit
+                        generalLedgerRecord.balance_credit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_debit=0
+                        generalLedgerRecord.balance_credit=revenueGeneralLedger[x-1].balance_credit-journalEntryRevenues[x].debit
+    
+                    }
+                        
+                }
+                else if(revenueGeneralLedger[x-1].balance_debit==0 && revenueGeneralLedger[x-1].balance_credit==0){
+                    generalLedgerRecord.balance_debit=journalEntryRevenues[x].debit
+                    generalLedgerRecord.balance_credit=0
+                }
+               
+            }
+            else{
+                
+                if(revenueGeneralLedger[x-1].balance_credit>0){
+                    generalLedgerRecord.balance_credit=revenueGeneralLedger[x-1].balance_credit+generalLedgerRecord.credit
+                    generalLedgerRecord.balance_debit=0
+                }
+                else if(revenueGeneralLedger[x-1].balance_credit==0 && revenueGeneralLedger[x-1].balance_debit>0){
+                    if(journalEntryRevenues[x].credit>revenueGeneralLedger[x-1].balance_debit){
+                        generalLedgerRecord.balance_credit=journalEntryRevenues[x].credit-revenueGeneralLedger[x-1].balance_debit
+                        generalLedgerRecord.balance_debit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_credit=0
+                        generalLedgerRecord.balance_debit=revenueGeneralLedger[x-1].balance_debit-journalEntryRevenues[x].credit
+    
+                    }
+                        
+                }
+                else if(revenueGeneralLedger[x-1].balance_debit==0 && revenueGeneralLedger[x-1].balance_credit==0){
+                    generalLedgerRecord.balance_debit=0
+                    generalLedgerRecord.balance_credit=journalEntryRevenues[x].credit
+                }
+    
+            }
+            
         }
-        
+        revenueGeneralLedger.push(generalLedgerRecord)
     }
-    liabilityGeneralLedger.push(generalLedgerRecord)
+    
+
 }
 
-for(let element of liabilityGeneralLedger){
-    element.balance=Math.abs(element.balance)
+const journalEntryCapital=await journalEntryRepository.find({
+    where:{
+        firm:foundFirm,
+        created_at:Between(firstDay,lastDay),
+        transaction_type:Like("%{-EQUITY-}%")
+    }
+
+})
+
+
+let capitalGeneralLedger:any=[]
+if(journalEntryCapital.length!=0){
+    for(let x=0;x<journalEntryCapital.length;x++){
+        let generalLedgerRecord=new generalLedger()
+        generalLedgerRecord.transaction_date=format(journalEntryCapital[x].created_at,'yyyy-MM-d')
+        generalLedgerRecord.description=journalEntryCapital[x].transaction_reason
+        generalLedgerRecord.debit=journalEntryCapital[x].debit
+        generalLedgerRecord.credit=journalEntryCapital[x].credit
+        if(x==0){
+    
+            if(journalEntryCapital[x].credit==0){
+                generalLedgerRecord.balance_debit=generalLedgerRecord.debit
+                generalLedgerRecord.balance_credit=0
+            }
+            else{
+                generalLedgerRecord.balance_credit=generalLedgerRecord.credit
+                generalLedgerRecord.balance_debit=0
+            }
+    
+        }
+        else{
+            if(journalEntryCapital[x].credit==0){
+                if(capitalGeneralLedger[x-1].balance_debit>0){
+                    generalLedgerRecord.balance_debit=capitalGeneralLedger[x-1].balance_debit+generalLedgerRecord.debit
+                    generalLedgerRecord.balance_credit=0
+                }
+                else if(capitalGeneralLedger[x-1].balance_debit==0 && capitalGeneralLedger[x-1].balance_debit>0){
+                    if(journalEntryCapital[x].debit>capitalGeneralLedger[x-1].balance_credit){
+                        generalLedgerRecord.balance_debit=journalEntryCapital[x].debit-capitalGeneralLedger[x-1].balance_credit
+                        generalLedgerRecord.balance_credit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_debit=0
+                        generalLedgerRecord.balance_credit=capitalGeneralLedger[x-1].balance_credit-journalEntryCapital[x].debit
+    
+                    }
+                        
+                }
+                else if(capitalGeneralLedger[x-1].balance_debit==0 && capitalGeneralLedger[x-1].balance_credit==0){
+                    generalLedgerRecord.balance_debit=journalEntryCapital[x].debit
+                    generalLedgerRecord.balance_credit=0
+                }
+               
+            }
+            else{
+                
+                if(capitalGeneralLedger[x-1].balance_credit>0){
+                    generalLedgerRecord.balance_credit=capitalGeneralLedger[x-1].balance_credit+generalLedgerRecord.credit
+                    generalLedgerRecord.balance_debit=0
+                }
+                else if(capitalGeneralLedger[x-1].balance_credit==0 && capitalGeneralLedger[x-1].balance_debit>0  ){
+                    if(journalEntryCapital[x].credit>capitalGeneralLedger[x-1].balance_debit){
+                        generalLedgerRecord.balance_credit=journalEntryCapital[x].credit-capitalGeneralLedger[x-1].balance_debit
+                        generalLedgerRecord.balance_debit=0
+                    }
+                    else{
+                        generalLedgerRecord.balance_credit=0
+                        generalLedgerRecord.balance_debit=capitalGeneralLedger[x-1].balance_debit-journalEntryCapital[x].credit
+    
+                    }
+                        
+                }
+                else if(capitalGeneralLedger[x-1].balance_debit==0 && capitalGeneralLedger[x-1].balance_credit==0){
+                    generalLedgerRecord.balance_debit=0
+                    generalLedgerRecord.balance_credit=journalEntryCapital[x].credit
+                }
+    
+            }
+            
+        }
+        capitalGeneralLedger.push(generalLedgerRecord)
+    }
 }
+
+
+
+
+
+
+
 
 res.status(200).json({
     status:200,
     asset_general_ledger:assetGeneralLedger,
-    liability_general_ledger:liabilityGeneralLedger,
-    assetFinalBalance:assetGeneralLedger[assetGeneralLedger.length-1].balance,
-    liabilityFinalBalance:liabilityGeneralLedger[liabilityGeneralLedger.length-1].balance,
+    expense_general_ledger:expenseGeneralLedger,
+    revenue_general_ledger:revenueGeneralLedger,
+    liabilityGeneralLedger:liabilityGeneralLedger,
+    capitalGeneralLedger:capitalGeneralLedger
+    // liability_general_ledger:liabilityGeneralLedger,
+    // assetFinalBalance:assetGeneralLedger[assetGeneralLedger.length-1].balance,
+    // liabilityFinalBalance:liabilityGeneralLedger[liabilityGeneralLedger.length-1].balance,
 })
 
 }

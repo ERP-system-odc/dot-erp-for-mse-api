@@ -4,15 +4,16 @@ export class generalLedger{
     description:string
     debit:number
     credit:number
-    balance:number
+    balance_debit:number
+    balance_credit:number
     
 
-   
 }
 
 export class trialBalance{
     account:string
-    balance:number
+    debit:number
+    credit:number
 }
 
 export class incomeStatement{

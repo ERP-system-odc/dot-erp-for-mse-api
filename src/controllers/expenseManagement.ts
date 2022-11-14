@@ -71,20 +71,22 @@ foundFirm.current_capital-=req.body.expense_amount
 await firmRepository.save(foundFirm)
 
 const journalEntry=new JournalEntry()
-journalEntry.account="ASSET(Cash)"
+journalEntry.account="Cash"
 journalEntry.debit=0
 journalEntry.credit=req.body.expense_amount
 journalEntry.firm=foundFirm
 journalEntry.transaction_reason="Paying cash for"+req.body.expense_name
+journalEntry.transaction_type="{-ASSET-}(Cash)"
 
 await journalEntryRepository.save(journalEntry)
 
 const journalEntrySecond=new JournalEntry()
-journalEntrySecond.account="LIABILITY("+req.body.expense_name+")"
+journalEntrySecond.account="Expense:"+req.body.expense_name
 journalEntrySecond.debit=req.body.expense_amount
 journalEntrySecond.credit=0
 journalEntrySecond.firm=foundFirm
 journalEntrySecond.transaction_reason="Expense of "+req.body.expense_name
+journalEntrySecond.transaction_type="{-EXPENSE-}(Other)"
 
 await journalEntryRepository.save(journalEntrySecond)
 return res.status(200).json({

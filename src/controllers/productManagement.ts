@@ -164,20 +164,22 @@ export let addToStock=async (req,res,next)=>{
     }
     if(req.body.product_expense>0){
         const journalEntry=new JournalEntry()
-        journalEntry.account="ASSET(Product:"+req.body.product_standard+" Expense)"
-        journalEntry.debit=0
-        journalEntry.credit=req.body.product_expense
+        journalEntry.account="Product:"+req.body.product_standard+" Expense"
+        journalEntry.debit=req.body.product_expense
+        journalEntry.credit=0
         journalEntry.firm=foundFirm
         journalEntry.transaction_reason="Paid cash for creation of product:"+req.body.product_standard
+        journalEntry.transaction_type="{-EXPENSE-}(Other)"
         
        await journalEntryRepository.save(journalEntry)
     
         const journalEntrySecond=new JournalEntry()
-        journalEntrySecond.account="LIABILITY(Cash)"
-        journalEntrySecond.debit=req.body.product_expense
-        journalEntrySecond.credit=0
+        journalEntrySecond.account="Cash"
+        journalEntrySecond.debit=0
+        journalEntrySecond.credit=req.body.product_expense
         journalEntrySecond.firm=foundFirm
         journalEntrySecond.transaction_reason="Expense for creation of product:"+req.body.product_standard
+        journalEntrySecond.transaction_type="{-ASSET-}(Cash)"
         
         await journalEntryRepository.save(journalEntrySecond)
     }
@@ -302,20 +304,22 @@ export const sellStock=async(req,res,next)=>{
         await firmRepository.save(foundFirm)
 
         const journalEntry=new JournalEntry()
-        journalEntry.account="ASSET(Cash)"
+        journalEntry.account="Cash"
         journalEntry.debit=foundProduct.product_selling_price
         journalEntry.credit=0
         journalEntry.firm=foundFirm
         journalEntry.transaction_reason="Received cash for the selling of 1 product:"+foundProduct.product_name
+        journalEntry.transaction_type="{-ASSET-}(Cash)"
         
         await journalEntryRepository.save(journalEntry)
   
         const journalEntrySecond=new JournalEntry()
-        journalEntrySecond.account="LIABILITY(Revenue from "+foundProduct.product_name+")"
+        journalEntrySecond.account="Revenue from "+foundProduct.product_name
         journalEntrySecond.debit=0
         journalEntrySecond.credit=foundProduct.product_selling_price
         journalEntrySecond.firm=foundFirm
         journalEntrySecond.transaction_reason="Got a revenue for selling 1 product:"+foundProduct.product_name
+        journalEntrySecond.transaction_type="{-REVENUE-}"
         
         await journalEntryRepository.save(journalEntrySecond)
     

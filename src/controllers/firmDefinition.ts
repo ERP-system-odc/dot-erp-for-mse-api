@@ -47,20 +47,22 @@ export const defineFirm=async(req,res,next)=>{
         await userRepository.save(userFound)
         
         const journalEntry=new JournalEntry()
-        journalEntry.account="ASSET(Cash)"
+        journalEntry.account="Cash"
         journalEntry.debit=req.body.business_capital
         journalEntry.credit=0
         journalEntry.firm=firm
         journalEntry.transaction_reason="Added cash to the business"
+        journalEntry.transaction_type="{-ASSET-}(Cash)"
         
         journalEntryRepository.save(journalEntry)
 
         const journalEntrySecond=new JournalEntry()
-        journalEntrySecond.account="LIABILITY(Common Stock)"
+        journalEntrySecond.account="Common Stock"
         journalEntrySecond.debit=0
         journalEntrySecond.credit=req.body.business_capital
         journalEntrySecond.firm=firm
         journalEntrySecond.transaction_reason="Paid cash to increase the common stock"
+        journalEntrySecond.transaction_type="{-EQUITY-}(Common Stock)"
         
         journalEntryRepository.save(journalEntrySecond)
     

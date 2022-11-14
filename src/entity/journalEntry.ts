@@ -26,6 +26,11 @@ export class JournalEntry{
     @Column({})
     transaction_reason:string
 
+    @Column({
+        select:false
+    })
+    transaction_type:string
+
      @ManyToOne(() => Firm,
                 firm=>firm.journal_entry)   
     @JoinColumn()
