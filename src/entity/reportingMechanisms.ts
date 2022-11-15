@@ -20,3 +20,8 @@ export class incomeStatement{
     transaction_name:string
     balance:number
 }
+export class BalanceSheet{
+    account_name:string
+    account_balance:number
+
+}

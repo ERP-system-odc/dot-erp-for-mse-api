@@ -3,7 +3,7 @@ import { JournalEntry } from "../entity/journalEntry";
 import { User } from "../entity/User";
 import { Firm } from "../entity/Firm";
 import { AppDataSource } from "../data-source";
-import {Raw,Like} from "typeorm";
+import {Raw,Like, Between} from "typeorm";
 import { request } from "http";
 import { Alias } from "typeorm/query-builder/Alias";
 import {add,format} from "date-fns"
@@ -29,7 +29,11 @@ let  date = new Date();
 
     
 let day=req.params.journalDate
+
 let dates=req.params.journalDate.split("-")
+let firstDay = new Date(parseInt(dates[0]), parseInt(dates[1])-1, parseInt(dates[2]));
+let nextDay=new Date(parseInt(dates[0]),parseInt(dates[1])-1,parseInt(dates[2])+1)
+console.log(firstDay,nextDay)
 let result = add(new Date(parseInt(dates[0]), parseInt(dates[1]), parseInt(dates[2])), {
     years: 0,
     months: -1,
@@ -40,7 +44,7 @@ let result = add(new Date(parseInt(dates[0]), parseInt(dates[1]), parseInt(dates
 
 let foundJournalEntry=await journalEntryRepository.find({
     where:{
-        created_at:Raw((alias) => `${alias} > :date` && `${alias} < :date2` , { date: day,date2:secondDate }),
+        created_at:Between(firstDay,nextDay),
         firm:foundFirm
     }
 })
