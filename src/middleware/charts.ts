@@ -8,6 +8,8 @@ import { AppDataSource } from "../data-source";
 import { Like, MoreThan,Between} from "typeorm";
 import moment from "moment";
 import { count } from "console";
+import { JournalEntry } from "../entity/journalEntry";
+import {add,format} from "date-fns"
 
 
 export const provideChartInfo= async (req,res,next)=>{
@@ -26,6 +28,7 @@ try{
     const productRepository=AppDataSource.getRepository(Product)
 
     const foundFirm=await firmRepository.findOneBy({user:foundUser})
+    const journalEntryRepository=await AppDataSource.getRepository(JournalEntry)
 
     if(!foundFirm)
 return res.status(404).json({
@@ -59,13 +62,15 @@ return res.status(404).json({
     let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
     let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-    let foundExpenses=await expenseRepository.findBy({ 
+    let foundExpenses=await journalEntryRepository.findBy({ 
         created_at: Between(firstDay, lastDay),
-        firm:foundFirm         
+        firm:foundFirm,
+        transaction_type:Like("%{-EXPENSE-}%")  
     })
     let amountOfExpense=0;
     await foundExpenses.forEach(element=>{
-        amountOfExpense+=element.expense_amount
+        amountOfExpense+=element.debit
+        amountOfExpense-=element.credit
     })
     let foundIncomes=await incomeRepository.findBy({ 
         created_at: Between(firstDay, lastDay),
@@ -76,6 +81,42 @@ return res.status(404).json({
         amountOfIncome+=element.income_amount
     })
     let candidateAPI=[]
+
+    let lastFiveExpenses=await journalEntryRepository.find({
+        where:{
+            created_at: Between(firstDay, lastDay),
+            firm:foundFirm,
+            transaction_type:Like("%{-EXPENSE-}%")  
+        },
+        skip:foundExpenses.length-5,
+        take:5
+    })
+    let capitalExpenseGraph:any=[]
+    if(lastFiveExpenses.length!=0){
+        for(let element of lastFiveExpenses){
+            let theDate=format(element.created_at, 'yyyy-MM-d')
+            let fDay = new Date(parseInt(theDate[0]), parseInt(theDate[1])-1, parseInt(theDate[2]));
+            let nextDay=new Date(parseInt(theDate[0]),parseInt(theDate[1])-1,parseInt(theDate[2])+1)
+        let theIncome=await incomeRepository.find({
+            where:{
+                created_at:Between(fDay,nextDay),
+                firm:foundFirm
+            }
+        })
+        let incomeSum:number=0
+        if(theIncome.length!=0){
+            for(let element2 of theIncome){
+                incomeSum+=element2.income_amount
+            }
+        }
+        capitalExpenseGraph.push({
+            expense:Math.abs(element.debit-element.credit),
+            date:theDate,
+            income:incomeSum
+        })
+        }
+    }
+    console.log(lastFiveExpenses)
 
     // foundProduct.forEach(async element=>{
       
@@ -119,7 +160,8 @@ return res.status(404).json({
         }
     }
 
-    
+
+
   
     
  res.status(200).json({
@@ -131,7 +173,8 @@ return res.status(404).json({
             name:maxProduct,
             count:maxCount
 
-        }
+        },
+        income_expense_graph:capitalExpenseGraph
     })
 
 
