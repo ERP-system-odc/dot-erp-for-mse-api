@@ -33,13 +33,13 @@ let day=req.params.journalDate
 let dates=req.params.journalDate.split("-")
 let firstDay = new Date(parseInt(dates[0]), parseInt(dates[1])-1, parseInt(dates[2]));
 let nextDay=new Date(parseInt(dates[0]),parseInt(dates[1])-1,parseInt(dates[2])+1)
-console.log(firstDay,nextDay)
-let result = add(new Date(parseInt(dates[0]), parseInt(dates[1]), parseInt(dates[2])), {
-    years: 0,
-    months: -1,
-    days: 1
-  })
-  let secondDate=format(result, 'yyyy-MM-d')
+
+// let result = add(new Date(parseInt(dates[0]), parseInt(dates[1]), parseInt(dates[2])), {
+//     years: 0,
+//     months: -1,
+//     days: 1
+//   })
+//   let secondDate=format(result, 'yyyy-MM-d')
 
 
 let foundJournalEntry=await journalEntryRepository.find({

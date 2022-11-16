@@ -81,16 +81,30 @@ return res.status(404).json({
         amountOfIncome+=element.income_amount
     })
     let candidateAPI=[]
+    let lastFiveExpenses=[]
 
-    let lastFiveExpenses=await journalEntryRepository.find({
-        where:{
-            created_at: Between(firstDay, lastDay),
-            firm:foundFirm,
-            transaction_type:Like("%{-EXPENSE-}%")  
-        },
-        skip:foundExpenses.length-5,
-        take:5
-    })
+    if(foundExpenses.length>5){
+        lastFiveExpenses=await journalEntryRepository.find({
+            where:{
+                created_at: Between(firstDay, lastDay),
+                firm:foundFirm,
+                transaction_type:Like("%{-EXPENSE-}%")  
+            },
+            skip:foundExpenses.length-5,
+            take:5
+        })
+    }
+    else{
+        lastFiveExpenses=await journalEntryRepository.find({
+            where:{
+                created_at: Between(firstDay, lastDay),
+                firm:foundFirm,
+                transaction_type:Like("%{-EXPENSE-}%")  
+            }
+        })
+    }
+
+     
     let capitalExpenseGraph:any=[]
     if(lastFiveExpenses.length!=0){
         for(let element of lastFiveExpenses){
@@ -166,6 +180,7 @@ return res.status(404).json({
     
  res.status(200).json({
         status:200,
+        capital:foundFirm.current_capital,
         product_percentages:productPercentages,
         expense:amountOfExpense,
         income:amountOfIncome,
