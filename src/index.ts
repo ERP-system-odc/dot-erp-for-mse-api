@@ -24,6 +24,7 @@ app.use(cors({
 }))
 
 
+
 AppDataSource.initialize()
 .then(async () => {
 
@@ -45,6 +46,7 @@ app.use("/api/generalLedger/",generalLedgerManagementRouter)
 app.use("/api/trialBalance",trialBalanceManagementRouter)
 app.use("/api/incomeStatement",incomeStatementManagementRouter)
 app.use("/api/balanceSheet",balanceSheetManagementRouter)
+
 app.use((err,req:Request,res:Response,next)=>{
     const errorStatus=err.status || 500;
     const errorMessage=err.message || "Something went wrong!";

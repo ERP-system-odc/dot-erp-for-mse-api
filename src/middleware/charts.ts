@@ -5,11 +5,17 @@ import { Expense } from "../entity/Expense";
 import { Income } from "../entity/Income";
 import { Product } from "../entity/product";
 import { AppDataSource } from "../data-source";
-import { Like, MoreThan,Between} from "typeorm";
+import { Like, MoreThan,Between, Raw} from "typeorm";
 import moment from "moment";
 import { count } from "console";
 import { JournalEntry } from "../entity/journalEntry";
-import {add,format} from "date-fns"
+import {add,format, setDate} from "date-fns"
+
+function subtractDays(numOfDays, date = new Date()) {
+    date.setDate(date.getDate() - numOfDays);
+  
+    return date;
+  }
 
 
 export const provideChartInfo= async (req,res,next)=>{
@@ -81,56 +87,115 @@ return res.status(404).json({
         amountOfIncome+=element.income_amount
     })
     let candidateAPI=[]
-    let lastFiveExpenses=[]
+    // let lastFiveExpenses=[]
 
-    if(foundExpenses.length>5){
-        lastFiveExpenses=await journalEntryRepository.find({
-            where:{
-                created_at: Between(firstDay, lastDay),
-                firm:foundFirm,
-                transaction_type:Like("%{-EXPENSE-}%")  
-            },
-            skip:foundExpenses.length-5,
-            take:5
-        })
-    }
-    else{
-        lastFiveExpenses=await journalEntryRepository.find({
-            where:{
-                created_at: Between(firstDay, lastDay),
-                firm:foundFirm,
-                transaction_type:Like("%{-EXPENSE-}%")  
-            }
-        })
-    }
+    // if(foundExpenses.length>5){
+    //     lastFiveExpenses=await journalEntryRepository.find({
+    //         where:{
+    //             created_at: Between(firstDay, lastDay),
+    //             firm:foundFirm,
+    //             transaction_type:Like("%{-EXPENSE-}%")  
+    //         },
+    //         skip:foundExpenses.length-5,
+    //         take:5
+    //     })
+    // }
+    // else{
+    //     lastFiveExpenses=await journalEntryRepository.find({
+    //         where:{
+    //             created_at: Between(firstDay, lastDay),
+    //             firm:foundFirm,
+    //             transaction_type:Like("%{-EXPENSE-}%")  
+    //         }
+    //     })
+    // }
 
      
     let capitalExpenseGraph:any=[]
-    if(lastFiveExpenses.length!=0){
-        for(let element of lastFiveExpenses){
-            let theDate=format(element.created_at, 'yyyy-MM-d')
-            let fDay = new Date(parseInt(theDate[0]), parseInt(theDate[1])-1, parseInt(theDate[2]));
-            let nextDay=new Date(parseInt(theDate[0]),parseInt(theDate[1])-1,parseInt(theDate[2])+1)
-        let theIncome=await incomeRepository.find({
-            where:{
-                created_at:Between(fDay,nextDay),
-                firm:foundFirm
-            }
+    //let fDay = new Date()
+    
+    for(let x=0;x<5;x++){
+        let fDay = new Date()
+        let customizedDate=format(fDay, 'yyyy-MM-d').split("-")
+        console.log(customizedDate)
+        let currentDate=add(new Date(parseInt(customizedDate[0]), parseInt(customizedDate[1]), parseInt(customizedDate[2])), {
+            years: 0,
+            months: -1,
+             days: x!=0 ? -x:0
+           })
+           currentDate.setHours(0,0,0,0)
+        let nextCustomizedDate=format(currentDate, 'yyyy-MM-d').split("-")
+        let nextDate=add(new Date(parseInt(nextCustomizedDate[0]), parseInt(nextCustomizedDate[1]), parseInt(nextCustomizedDate[2])), {
+            years: 0,
+            months: -1,
+             days: 1
+           })
+        nextDate.setHours(0,0,0,0)
+
+
+        
+        console.log(currentDate,nextDate)
+
+   
+        let theDate=format(currentDate, 'yyyy-MM-d')
+        let expenseData=await journalEntryRepository.findBy({
+            created_at: Between(currentDate,nextDate),
+                firm:foundFirm,
+                transaction_type:Like("%{-EXPENSE-}%")  
         })
-        let incomeSum:number=0
-        if(theIncome.length!=0){
-            for(let element2 of theIncome){
-                incomeSum+=element2.income_amount
+    
+        let myFinalExpense=0
+        if(expenseData.length!=0){
+            
+            for(let element of expenseData){
+                myFinalExpense+=element.debit
+                myFinalExpense-=element.credit
+            }
+            
+
+        }
+        let incomeData=await incomeRepository.findBy({
+            created_at: Between(currentDate,nextDate),
+                firm:foundFirm,
+        })
+        let myFinalIncome=0
+        if(incomeData.length!=0){
+            for(let element of incomeData){
+                myFinalIncome+=element.income_amount
             }
         }
         capitalExpenseGraph.push({
-            expense:Math.abs(element.debit-element.credit),
+            expense:myFinalExpense,
             date:theDate,
-            income:incomeSum
+            income:myFinalIncome
         })
-        }
     }
-    console.log(lastFiveExpenses)
+    console.log("Capital Expense Graph",capitalExpenseGraph)
+    // if(lastFiveExpenses.length!=0){
+    //     for(let element of lastFiveExpenses){
+    //         let theDate=format(element.created_at, 'yyyy-MM-d')
+    //         let fDay = new Date(parseInt(theDate[0]), parseInt(theDate[1])-1, parseInt(theDate[2]));
+    //         let nextDay=new Date(parseInt(theDate[0]),parseInt(theDate[1])-1,parseInt(theDate[2])+1)
+    //     let theIncome=await incomeRepository.find({
+    //         where:{
+    //             created_at:Between(fDay,nextDay),
+    //             firm:foundFirm
+    //         }
+    //     })
+    //     let incomeSum:number=0
+    //     if(theIncome.length!=0){
+    //         for(let element2 of theIncome){
+    //             incomeSum+=element2.income_amount
+    //         }
+    //     }
+    //     capitalExpenseGraph.push({
+    //         expense:Math.abs(element.debit-element.credit),
+    //         date:theDate,
+    //         income:incomeSum
+    //     })
+    //     }
+    // }
+    // console.log(lastFiveExpenses)
 
     // foundProduct.forEach(async element=>{
       
