@@ -13,6 +13,7 @@ import { trialBalanceManagementRouter } from "./routes/trialBalance"
 import { incomeStatementManagementRouter } from "./routes/incomeStatement"
 import { balanceSheetManagementRouter } from "./routes/balanceSheet"
 import moment from "moment";
+import {add,format, setDate} from "date-fns"
 const cookieParser=require("cookie-parser")
 const app:Application=express()
 const cors=require('cors')
@@ -23,6 +24,11 @@ app.use(cors({
 
 }))
 
+function subtractDays(numOfDays, date = new Date()) {
+    date.setDate(date.getDate() - numOfDays);
+  
+    return date;
+  }
 
 
 AppDataSource.initialize()

@@ -45,7 +45,7 @@ let nextDay=new Date(parseInt(dates[0]),parseInt(dates[1])-1,parseInt(dates[2])+
 let foundJournalEntry=await journalEntryRepository.find({
     where:{
         created_at:Between(firstDay,nextDay),
-        firm:foundFirm
+        firm:foundFirm  
     }
 })
 
