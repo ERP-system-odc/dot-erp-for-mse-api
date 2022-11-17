@@ -166,18 +166,32 @@ balanceSheetStockRecord.account_balance=Math.abs(debitStock-creditStock)
 
 
 
+if(balanceSheetRetainedorAccumulatedRecord.account_name=="Accumulated Losses"){
+    res.status(200).json({
+        status:200,
+        cash:balanceSheetCashRecord,
+        inventory:balanceSheetInventoryRecord,
+        assetSum:balanceSheetCashRecord.account_balance+balanceSheetInventoryRecord.account_balance,
+        stock:balanceSheetStockRecord,
+        earning_or_loss:balanceSheetRetainedorAccumulatedRecord,
+        net_stock:balanceSheetStockRecord.account_balance-balanceSheetRetainedorAccumulatedRecord.account_balance
+        
+    })
+}
+else{
+    res.status(200).json({
+        status:200,
+        cash:balanceSheetCashRecord,
+        inventory:balanceSheetInventoryRecord,
+        assetSum:balanceSheetCashRecord.account_balance+balanceSheetInventoryRecord.account_balance,
+        stock:balanceSheetStockRecord,
+        earning_or_loss:balanceSheetRetainedorAccumulatedRecord,
+        net_stock:balanceSheetStockRecord.account_balance+balanceSheetRetainedorAccumulatedRecord.account_balance
+        
+    })
+}
 
 
-res.status(200).json({
-    status:200,
-    cash:balanceSheetCashRecord,
-    inventory:balanceSheetInventoryRecord,
-    assetSum:balanceSheetCashRecord.account_balance+balanceSheetInventoryRecord.account_balance,
-    stock:balanceSheetStockRecord,
-    earning_or_loss:balanceSheetRetainedorAccumulatedRecord,
-    net_stock:balanceSheetStockRecord.account_balance-balanceSheetRetainedorAccumulatedRecord.account_balance
-    
-})
 
 }
 }
