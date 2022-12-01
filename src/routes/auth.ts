@@ -13,4 +13,4 @@ authRouter.post('/signin',signinDataValidation,signin,provideChartInfo)
 
 export {
     authRouter
-}
+}   
